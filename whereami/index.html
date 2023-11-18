@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>$ whereami</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+body {
+  background: #000;
+}
+#map {
+  height: 911px;
+  width: 1840px;
+}
+    </style>
+  </head>
+  <body>
+    <div id='map'></div>
+    <script>
+    const drawMap = (lat, lon) => {
+      mapboxgl.accessToken = 'pk.eyJ1IjoibmFyeWFsMjU4MCIsImEiOiJjamhybmJxY2YxNzhzMzBvNDl2Z3Jmd3k5In0.af9ImJzRU2-EiRtLlrggxg';
+      const map = new mapboxgl.Map({
+          container: 'map',
+          style: 'mapbox://styles/mapbox/navigation-night-v1',
+          center: [lon, lat],
+          zoom: 8,
+      });
+    }
+    const useGeoIP = () => {
+      fetch("http://ip-api.com/json/?fields=192").then( resp => {
+        resp.json().then( coords => {
+          drawMap(coords.lat, coords.lon);
+        })
+      })
+    }
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition( position => {
+        drawMap(position.coords.latitude, position.coords.longitude);
+      }, err => { useGeoIP() })
+    } else {
+      useGeoIP()
+    }
+    </script>
+  </body>
+</html>
