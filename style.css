@@ -12,3 +12,9 @@ h1 {
 ul {
   list-style-type: ">  ";
 }
+
+img {
+  border-radius: 50%;
+  float: right;
+  height: 50px;
+}
