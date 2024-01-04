@@ -29,7 +29,7 @@ body {
       });
     }
     const useGeoIP = () => {
-      fetch("http://ip-api.com/json/?fields=192").then( resp => {
+      fetch("https://ip-api.com/json/?fields=192").then( resp => {
         resp.json().then( coords => {
           drawMap(coords.lat, coords.lon);
         })
