@@ -18,3 +18,11 @@ img {
   float: right;
   height: 50px;
 }
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
