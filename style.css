@@ -13,10 +13,16 @@ ul {
   list-style-type: ">  ";
 }
 
-img {
+[alt="avatar"] {
   border-radius: 50%;
   float: right;
   height: 50px;
+}
+
+#emblem {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 a {
