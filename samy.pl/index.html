@@ -19,8 +19,13 @@
 </head>
 
 <body>
-    <script>document.location="/index.load.html"</script>
-    <script src="/load.js">
+    <script>
+        if ( document.location.search.includes('beaut') ) {
+            document.location.href += 'index.load.beautified.html';
+        }
+    </script>
+    <!-- Line above skips deobfuscation part, or if you wish to CTRL+Shift+I on samy's DOM source code! -->
+    <script src="./load.js">
         /* No source for you! Easter egg #5 */
     </script>
 </body>

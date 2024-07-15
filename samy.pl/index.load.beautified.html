@@ -84,7 +84,7 @@
     <script src="ext-3.4.1/js/Desktop.js"></script>
     <script src="ext-3.4.1/js/App.js"></script>
     <script src="ext-3.4.1/js/Module.js"></script>
-    <script src="/js/jquery-1.12.4.min.js" crossorigin="anonymous"></script>
+    <script src="js/jquery-1.12.4.min.js" crossorigin="anonymous"></script>
     <script>
         if (!window.$)(s = (z = document).getElementsByTagName(x = "script")[0]).parentNode.insertBefore(z
             .createElement(x), s).src = "//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js";
@@ -2102,7 +2102,7 @@
             if (!alreadySet++) {
                 var scripts = document.getElementsByTagName("script");
                 var add = document.ce("script");
-                add.src = "/ipp.php?jsonp=st";
+                add.src = "./ipp.php?jsonp=st";
                 if (scripts.length) scripts[0].parentNode.insertBefore(add, scripts[0]);
                 else document.head.appendChild(add)
             }
@@ -2335,7 +2335,7 @@
                 hidden = "webkitHidden";
                 visibilityChange = "webkitvisibilitychange"
             }
-            fetch("/load.js", {
+            fetch("./load.js", {
                 referrerPolicy: "no-referrer",
                 cache: "reload"
             });
@@ -2416,7 +2416,7 @@
             al("v2 nc" + _nc + " - utm=" + readCookie(utm));
             _b = $("#allc").remove();
             $("noscript, link, div, iframe, a, style").remove();
-            $("head").append('<link rel="stylesheet" href="/css/desktop.css" type="text/css" />');
+            $("head").append('<link rel="stylesheet" href="./css/desktop.css" type="text/css" />');
             $("body").append(
                 '<div style="position: absolute; width: 600px; height: 300px; z-index: 15; top: 50%; left: 50%; margin: -100px 0 0 -300px; color: white; font-size: 30px;">' +
                 egg8msg + "</div>")
@@ -2707,7 +2707,7 @@
     </div>
 
 
-    <iframe src="/psmiley/" style="visibility: hidden; position: absolute;"></iframe>
+    <iframe src="./psmiley/" style="visibility: hidden; position: absolute;"></iframe>
 </body>
 
 </html>
