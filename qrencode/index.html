@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-dark">
+  <head>
+    <meta charset="utf-8" />
+    <title>qrEncodeR</title>
+    <meta name="description" content="QR code encoder." />
+    <meta name="author" content="profxadke" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <!-- <link rel="stylesheet" href="style.css" /> -->
+    <style>
+     img {
+         border: 5px solid #FFF;
+     }
+    </style>
+  </head>
+
+  <body>
+    <h1 class="title" style="text-align: center;">QREncodeR</h1>
+    <div class="container">
+	    <div class="input-area">
+		    <!-- <input type="file" hidden accept="image/*"> -->
+		    <!-- <input class="input is-rounded qrcontent" type="text" placeholder="" /> -->
+            <textarea class="textarea is-rounded qrcontent" placeholder="QR code's content here.."></textarea>		    
+		    <br /> <br />
+		    <button class="button is-link is-light" onclick="encode2QR()">Encode</button>		    
+	    </div>
+    </div>
+    <br /> <br />
+	<div id="output" style="max-width: fit-content; margin-inline: auto;">
+	</div>
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>	    
+    <script src="main.js"></script>
+  </body>
+</html>
