@@ -14,13 +14,15 @@ const hnfetch = async query => {
 
 const toggleTheme = () => {
   if (THEME) {
-    document.querySelector('html').removeAttribute('class');
+    document.querySelector('html').classList.remove('theme-dark');
+    document.querySelector('html').classList.add('theme-light');
     document.querySelector('.toggle').classList.remove('is-light');
     document.querySelector('.toggle').classList.add('is-dark');
     document.querySelector('.toggle').innerText = "Dark";
     THEME = 0;
   } else {
-    document.querySelector('html').setAttribute('class', 'theme-dark');
+    document.querySelector('html').classList.remove('theme-light');
+    document.querySelector('html').classList.add('theme-dark');
     document.querySelector('.toggle').classList.remove('is-dark');
     document.querySelector('.toggle').classList.add('is-light');
     document.querySelector('.toggle').innerText = "Light";
