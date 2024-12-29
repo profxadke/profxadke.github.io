@@ -36,3 +36,15 @@ a:hover {
 .toggle {
   float: right;
 }
+
+.theme-switch {
+  float: left;
+}
+
+.ego {
+  text-align: center;
+}
+
+#ego {
+  color: lime;
+}
