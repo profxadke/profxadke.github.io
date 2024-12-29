@@ -1,4 +1,4 @@
-THEME = 0;
+THEME = 1;
 
 const renderMD = markdown => {
   return DOMPurify.sanitize( marked.parse( markdown ) );
