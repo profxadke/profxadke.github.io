@@ -93,7 +93,7 @@ const fetchWithHeaders = async (fetch, url, options = {}) => {
   const defaultHeaders = {
     "Content-Type": "application/json",
     Accept: "application/json",
-    "User-Agent": `ollama-js/${version} (${getPlatform()})`
+    "User-Agent": `zeenoClient/1.1 ollama-js/2.1 (${getPlatform()})`
   };
   options.headers = normalizeHeaders(options.headers);
   const customHeaders = Object.fromEntries(
