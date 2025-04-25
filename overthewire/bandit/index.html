@@ -32,14 +32,6 @@ body {
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
-    const renderer = new marked.Renderer();
-    renderer.code = function (code, language) {
-      if (code.match(/^sequenceDiagram/) || code.match(/^graph/)) {
-        return '<pre class="mermaid">' + code + '</pre>';
-      } else {
-        return '<pre><code>' + code + '</code></pre>';
-      }
-    }; marked.use({ renderer: { renderer } })
     // Function to render markdown by first sanitizing it.
     const renderMD = markdown => {
         return DOMPurify.sanitize( marked.parse( markdown ) );
