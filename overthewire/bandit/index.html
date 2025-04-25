@@ -37,7 +37,7 @@ body {
         return DOMPurify.sanitize( marked.parse( markdown ) );
     }
     const parseCSV = payload => {
-        return Papa.parse(payload).data;
+        return Papa.parse(payload.trim()).data;
     };
     const parseCreds = async () => {
         resp = await fetch('https://osho.is-a.dev/overthewire/bandit/credentials.csv');
