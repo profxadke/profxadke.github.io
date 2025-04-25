@@ -1,1 +1,45 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Over The Wire: Bandit</title>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+  >
+  <style>
+body {
+  margin: 20px;
+  overflow: hidden;
+}
+#editor {
+  width: 90%;
+}
+  </style>
+</head>
+<body>
+  <h1>Over The Wire: Bandit</h1>
+  <br />
+  <div id="preview"></div>
+  <br /> <br />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" integrity="sha512-H+rglffZ6f5gF7UJgvH4Naa+fGCgjrHKMgoFOGmcPTRwR6oILo5R+gtzNrpDp7iMV3udbymBVjkeZGNz1Em4rQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const renderer = new marked.Renderer();
+    renderer.code = function (code, language) {
+      if (code.match(/^sequenceDiagram/) || code.match(/^graph/)) {
+        return '<pre class="mermaid">' + code + '</pre>';
+      } else {
+        return '<pre><code>' + code + '</code></pre>';
+      }
+    }; marked.use({ renderer: { renderer } })
+    // Function to render markdown by first sanitizing it.
+    const renderMD = markdown => {
+        return DOMPurify.sanitize( marked.parse( markdown ) );
+    }
+  </script>
+</body>
+</html>
