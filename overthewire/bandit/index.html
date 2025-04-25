@@ -43,7 +43,9 @@ body {
         resp = await fetch('https://osho.is-a.dev/overthewire/bandit/credentials.csv');
 	data = await resp.text();
 	return parseCSV(data.trim())
-    }; informational_credentials = await obtainCredentials()
+    }; obtainCredentials().then( credentials => {
+        console.log(credentials);
+    })
   </script>
 </body>
 </html>
