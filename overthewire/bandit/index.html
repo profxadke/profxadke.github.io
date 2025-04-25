@@ -37,7 +37,7 @@ body {
         return DOMPurify.sanitize( marked.parse( markdown ) );
     }
     const parseCSV = payload => {
-        return Papa.parse(csv);
+        return Papa.parse(payload);
     }
   </script>
 </body>
