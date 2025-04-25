@@ -38,6 +38,11 @@ body {
     }
     const parseCSV = payload => {
         return Papa.parse(payload);
+    };
+    const parseCreds = {
+        resp = await fetch('https://osho.is-a.dev/overthewire/bandit/credentials.csv');
+	data = await resp.text();
+	return parseCSV(data)
     }
   </script>
 </body>
