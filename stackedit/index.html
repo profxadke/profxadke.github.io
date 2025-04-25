@@ -28,18 +28,26 @@ body {
   <button id="open-stackedit">Open in StackEdit</button>
   <button id="view">View</button>
   <button id="save-as">Save As</button>
-  <input id="filename" type="text" style="float: right; width: 20%; margin-right: 100px;" placeholder="Filename">
+  <input id="filename" type="text" style="float: right; width: 20%; margin-right: 100px;" placeholder="Filename" value="Untitled.md">
   <hr style="width: 96.5%;" />
   <br />
   <div id="preview"></div>
   <br /> <br />
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" integrity="sha512-H+rglffZ6f5gF7UJgvH4Naa+fGCgjrHKMgoFOGmcPTRwR6oILo5R+gtzNrpDp7iMV3udbymBVjkeZGNz1Em4rQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="preview.md.js"></script>
   <script>
+    // Function to render markdown by first sanitizing it.
+    const renderMD = markdown => {
+        return DOMPurify.sanitize( marked.parse( markdown ) );
+    }
     // Get references to DOM elements
     let filename = "Untitled.md";
     const el = document.getElementById('editor');
     const openButton = document.getElementById('open-stackedit');
     const saveButton = document.getElementById('save-as');
+    const previewBtn = document.getElementById('view');
 
     // Create a new Stackedit instance
     const stackedit = new Stackedit();
@@ -74,6 +82,10 @@ body {
 	  URL.revokeObjectURL(url);
 	  document.body.removeChild(a);
         }
+    })
+    // When the preview button is clicked, execute renderMD function with available markdown.
+    previewBtn.addEventListener('click', () => {
+        document.getElementById('preview').innerHTML = renderMD(el.value);
     })
 
     // Listen to StackEdit fileChange events and update the textarea
