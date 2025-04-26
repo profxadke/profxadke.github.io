@@ -46,6 +46,18 @@ body {
     }; obtainCreds().then( credentials => {
         console.log(credentials);
     })
+
+    // Dynamic Routing for CSR site via fetch and markdown rendering..
+    const levelProvided = () => {
+	const location_hash = Number(location.hash.slice(1));
+	if ( isFinite(location_hash) && location_hash <= 34 && location_hash >= 0 ) {
+	    fetch(`/overthewire/bandit/levels/${location_hash}_${location_hash + 1}.md`).then( response => {
+                response.text().then( resp => {
+                    document.getElementById('preview').innerHTML = renderMD(resp);
+		})
+	    })
+	}
+    }; window.onhashchange = levelProvided;
   </script>
 </body>
 </html>
