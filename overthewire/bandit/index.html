@@ -62,6 +62,8 @@ body {
                     document.getElementById('preview').innerHTML = renderMD(resp);
 		})
 	    })
+	} else {
+                document.getElementById('preview').innerHTML = renderMD('# 404 - Not Found!');
 	}
     }; window.onhashchange = levelProvided; $$(levelProvided);
   </script>
