@@ -63,20 +63,23 @@ body {
 		})
 	    })
 	} else if ( location.hash.slice(1) === 'creds' ) {
-            obtainCreds().then( myObj => {
-                let html = "<table border='1'>";
+            obtainCreds().then( credentials => {
+                let markup = "<table border='0'>";
 
-                // Outer loop: one row per inner array
-		myObj.forEach(row => {
-		html += "<tr>";
-		// Inner loop: one cell per item
-		row.forEach(cell => {
-		    html += "<td>" + cell + "</td>";
+		// Outer loop: one row per inner array
+		i = 0;
+		credentials.forEach(row => {
+		    markup += "<tr>";
+		    // Inner loop: one cell per item
+		    row.forEach(cell => {
+			if ( i <= 1 ) { i++; markup += "<td>" + cell[0].toUpperCase() + cell.slice(1) + "</td>"; }
+			else if ( i == 2 ) { i++; markup += "<td>" + cell.toUpperCase() + "</td>"; }
+			else { markup += "<td>" + cell + "</td>"; }
+		    });
+		    markup += "</tr>";
 		});
-		    html += "</tr>";
-		});
-		    html += "</table>";
-		    document.getElementById("demo").innerHTML = html;
+		markup += "</table>";
+		document.getElementById("preview").innerHTML = markup;
 	    })
 	  }
 	} else {
