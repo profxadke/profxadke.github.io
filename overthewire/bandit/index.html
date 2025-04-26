@@ -32,6 +32,12 @@ body {
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
+    // The function below is a callback placeholder if DOM is loaded.
+    const $$ = (callback) => {
+        window.addEventListener("DOMContentLoaded", () => {
+            callback();
+        });
+    };
     // Function to render markdown by first sanitizing it.
     const renderMD = markdown => {
         return DOMPurify.sanitize( marked.parse( markdown ) );
@@ -57,7 +63,7 @@ body {
 		})
 	    })
 	}
-    }; window.onhashchange = levelProvided;
+    }; window.onhashchange = levelProvided; $$(levelProvided);
   </script>
 </body>
 </html>
