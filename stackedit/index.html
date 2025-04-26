@@ -94,7 +94,7 @@ body {
     // When the preview button is clicked, execute renderMD function with available markdown.
     previewBtn.addEventListener('click', () => {
         document.getElementById('preview').innerHTML = renderMD(el.value);
-	mermaid.init();
+	mermaid.init({theme: 'dark'});
     })
 
     // Listen to StackEdit fileChange events and update the textarea
