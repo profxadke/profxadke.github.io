@@ -38,8 +38,8 @@ body {
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     const r = new marked.Renderer();
-    r.code = (code, language) => {
-      if (code.raw.match(/^sequenceDiagram/) || code.raw.match(/^graph/)) {
+    r.code = code => {
+      if (code.text.match(/^sequenceDiagram/) || code.text.match(/^graph/) || code.text.match(/^flowchart/) || code.lang === 'mermaid') {
         return '<pre class="mermaid">' + code.text + '</pre>';
       } else {
         return '<pre><code>' + code.text + '</code></pre>';
