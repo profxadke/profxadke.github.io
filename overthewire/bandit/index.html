@@ -62,6 +62,23 @@ body {
                     document.getElementById('preview').innerHTML = renderMD(resp);
 		})
 	    })
+	} else if ( location.hash.slice(1) === 'creds' ) {
+            obtainCreds().then( myObj => {
+                let html = "<table border='1'>";
+
+                // Outer loop: one row per inner array
+		myObj.forEach(row => {
+		html += "<tr>";
+		// Inner loop: one cell per item
+		row.forEach(cell => {
+		    html += "<td>" + cell + "</td>";
+		});
+		    html += "</tr>";
+		});
+		    html += "</table>";
+		    document.getElementById("demo").innerHTML = html;
+	    })
+	  }
 	} else {
 		document.getElementById('preview').innerHTML = renderMD('# <u><center style="font-size: xxx-large;"> 404 - Not Found! </center></u>\n\n<a style="text-decoration: none;" href="/overthewire/bandit">Home</a>');
 	}
