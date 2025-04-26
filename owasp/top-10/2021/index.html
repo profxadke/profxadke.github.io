@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OWASP Top 10: 2021</title>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+  >
+  <style>
+body {
+  margin: 20px;
+  overflow-x: hidden;
+}
+#title {
+  text-align: center;
+}
+#editor {
+  width: 90%;
+}
+  </style>
+</head>
+<body>
+  <br />
+  <div id="preview"></div>
+  <br /> <br />
+
+  <script>
+    // The function below is a callback placeholder if DOM is loaded.
+    const $$ = (callback) => {
+        window.addEventListener("DOMContentLoaded", () => {
+            callback();
+        });
+    };
+    // Function to render iframe.
+    const renderPage = () => {
+        document.getElement.ById('preview').innerHTML = '<iframe src="https://owasp.org/Top10/" style="border: none;"></iframe>'
+    }; $$( () => { renderPage(); })
+  })
+
+  </script>
+</body>
+</html>
