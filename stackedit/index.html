@@ -49,7 +49,7 @@ body {
     // Function to render markdown by first sanitizing it.
     const renderMD = markdown => {
         return DOMPurify.sanitize( marked.parse( markdown ) );
-    }
+    }; mermaid.init();
     // Get references to DOM elements
     let filename = "Untitled.md";
     const el = document.getElementById('editor');
