@@ -56,14 +56,14 @@ body {
     // Dynamic Routing for CSR site via fetch and markdown rendering..
     const levelProvided = () => {
 	const location_hash = Number(location.hash.slice(1));
-	if ( isFinite(location_hash) && location_hash <= 34 && location_hash >= 0 ) {
+	if ( isFinite(location_hash) && location_hash <= 33 && location_hash >= 0 ) {
 	    fetch(`/overthewire/bandit/levels/${location_hash}_${location_hash + 1}.md`).then( response => {
                 response.text().then( resp => {
                     document.getElementById('preview').innerHTML = renderMD(resp);
 		})
 	    })
 	} else {
-                document.getElementById('preview').innerHTML = renderMD('# 404 - Not Found!');
+		document.getElementById('preview').innerHTML = renderMD('# <span style="text-align: center;"> 404 - Not Found! </span>');
 	}
     }; window.onhashchange = levelProvided; $$(levelProvided);
   </script>
