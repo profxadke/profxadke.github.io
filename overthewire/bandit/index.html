@@ -77,12 +77,11 @@ body {
 			else { markup += "<td>" + cell + "</td>"; }
 		    });
 		    markup += "</tr>";
-		});
-		markup += "</table>";
-		document.getElementById("preview").innerHTML = markup;
+		}); 
+	        markup += "</table>";
+	        document.getElementById("preview").innerHTML = markup;
 	    })
-	  }
-	} else {
+	else {
 		document.getElementById('preview').innerHTML = renderMD('# <u><center style="font-size: xxx-large;"> 404 - Not Found! </center></u>\n\n<a style="text-decoration: none;" href="/overthewire/bandit">Home</a>');
 	}
     }; window.onhashchange = levelProvided; $$(levelProvided);
