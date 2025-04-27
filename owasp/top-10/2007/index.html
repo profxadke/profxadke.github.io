@@ -24,7 +24,7 @@ img {
 </head>
 <body>
   <div id="preview">
-  <embed src="https://osho.is-a.dev/owasp/top-10/2007/OWASP_TOP-10_2007.pdf" type="application/pdf" />
+  <embed id="pdocfmt" src="https://osho.is-a.dev/owasp/top-10/2007/OWASP_TOP-10_2007.pdf" type="application/pdf" />
   </div>
   <br /> <br />
   <!-- Placeholder for a global footer. 
@@ -80,6 +80,7 @@ img {
                 document.getElementById('preview').innerHTML = content;
         }); */
 	document.getElementById('preview').style.width = `${document.body.offsetWidth - ( getScrollBarWidth() * 2 )}px`
+	document.getElementById('pdocfmt').style.width = `${screen.height - ( getScrollBarWidth() * 10)}px`
     })
 
   </script>
