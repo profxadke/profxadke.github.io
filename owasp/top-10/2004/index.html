@@ -46,6 +46,7 @@ body {
     }; $$( () => {
             renderPage().then ( content => {
                 document.getElementById('preview').innerHTML = content;
+		document.getElementById('preview').style.width = `${document.body.offsetWidth - ( getScrollBarWidth() * 2 )}px`
         });
     })
 
