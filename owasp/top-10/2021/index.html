@@ -19,23 +19,67 @@ body {
 #editor {
   width: 90%;
 }
+img {
+  display: block;
+  margin: auto;
+}
   </style>
 </head>
 <body>
   <br />
   <div id="preview"></div>
   <br /> <br />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" integrity="sha512-H+rglffZ6f5gF7UJgvH4Naa+fGCgjrHKMgoFOGmcPTRwR6oILo5R+gtzNrpDp7iMV3udbymBVjkeZGNz1Em4rQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
+    // The function below enumerates scrollbar width of a page.
+    const getScrollBarWidth = () => {
+        var inner = document.createElement('p');
+	inner.style.width = "100%";
+        inner.style.height = "200px";
+
+        var outer = document.createElement('div');
+	outer.style.position = "absolute";
+	outer.style.top = "0px";
+	outer.style.left = "0px";
+	outer.style.visibility = "hidden";
+	outer.style.width = "200px";
+	outer.style.height = "150px";
+	outer.style.overflow = "hidden";
+	outer.appendChild (inner);
+
+	document.body.appendChild (outer);
+	var w1 = inner.offsetWidth;
+	outer.style.overflow = 'scroll';
+	var w2 = inner.offsetWidth;
+	if (w1 == w2) w2 = outer.clientWidth;
+
+	document.body.removeChild (outer);
+
+	return (w1 - w2);
+    };
     // The function below is a callback placeholder if DOM is loaded.
     const $$ = (callback) => {
         window.addEventListener("DOMContentLoaded", () => {
             callback();
         });
     };
-    // Function to render iframe.
-    const renderPage = () => {
-        document.getElementById('preview').innerHTML = '<iframe src="https://owasp.org/Top10/" style="border: none;"></iframe>'
-    }; $$( () => { renderPage(); })
+    // Function to render markdown by first sanitizing it.
+    const renderMD = markdown => {
+        return DOMPurify.sanitize( marked.parse( markdown ) );
+    }
+    const renderPage = async () => {
+        resp = await fetch('https://osho.is-a.dev/owasp/top-10/2021/index.md');
+	data = await resp.text();
+	return renderMD(data.trim())
+    }; $$( () => {
+            renderPage().then ( content => {
+                document.getElementById('preview').innerHTML = content;
+		document.getElementById('preview').style.width = `${document.body.offsetWidth - ( getScrollBarWidth() * 2 )}px`
+        });
+    })
+
   </script>
 </body>
 </html>
