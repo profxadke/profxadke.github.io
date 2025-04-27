@@ -57,7 +57,7 @@ A01 Broken Access Control · A02 Cryptographic Failures · A03 Injection · A04 
 
 ---
 
-## Key Takeaways, ELI5
+## Comparision on a single line
 - **2004–2007**: “Here are the ten biggest coding oopsies.”
 - **2010**: “Let’s rank by how risky these oopsies are.”
 - **2013**: “Show me the data—let numbers decide.”
