@@ -40,7 +40,7 @@ const another_denial = () => {
     txt = resp['reason'];
     i = 0;
     typeWriter();
-  }); document.querySelector('#chat-response').innerHTML += `<br /><br /><button style="background: #000;color: #0F0;border-radius: 8px;" onclick="another_denial()"> 4N0+H3R 0N3! </button>`;
+  });
 }
 
 const typeWriter = () => {
