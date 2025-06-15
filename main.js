@@ -1,5 +1,6 @@
 THEME = 1;
 
+var i = 0;
 const SPEED = 50;
 
 const renderMD = markdown => {
@@ -35,7 +36,7 @@ const toggleTheme = () => {
 const another_denial = () => {
   $_('GET', 'https://no.vision-xtech.com').then( resp => {
     var txt = resp['reason'];
-    var i = 0;
+    i = 0;
     typeWriter();
   }); document.querySelector('#chat-response').innerHTML += `<br /><br /><button style="background: #000;color: #0F0;border-radius: 8px;" onclick="another_denial()"> 4N0+H3R 0N3! </button>`;
 }
@@ -43,7 +44,7 @@ const another_denial = () => {
 const typeWriter = () => {
   if (i < txt.length) {
     document.querySelector('#chat-response').innerText += txt.charAt(i);
-    i++;
+    i++; console.log(txt);
     setTimeout(typeWriter, SPEED);
   }
 }
