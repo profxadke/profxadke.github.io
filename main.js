@@ -39,7 +39,7 @@ const another_denial = () => {
     var txt = resp['reason'];
     var i = 0;
     typeWriter();
-  });
+  }); document.querySelector('#chat-response').innerHTML += `<br /><br /><button style="background: #000;color: #0F0;border-radius: 8px;" onclick="another_denial()"> 4N0+H3R 0N3! </button>`;
 }
 
 const typeWriter = () => {
@@ -48,7 +48,6 @@ const typeWriter = () => {
     i++;
     setTimeout(typeWriter, SPEED);
   }
-  document.querySelector('#chat-response').innerHTML += `<br /><br /><button style="background: #000;color: #0F0;border-radius: 8px;" onclick="another_denial()"> 4N0+H3R 0N3! </button>`;
 }
 
 
