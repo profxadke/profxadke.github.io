@@ -35,6 +35,7 @@ const toggleTheme = () => {
 }
 
 const another_denial = () => {
+  document.querySelector('#chat-response').innerHTML = '';
   $_('GET', 'https://no.vision-xtech.com').then( resp => {
     txt = resp['reason'];
     i = 0;
