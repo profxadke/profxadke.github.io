@@ -1,8 +1,6 @@
 THEME = 1;
 
 const SPEED = 50;
-var i = 0;
-var txt = 'My plate is full, and I already ate the portion of doing favors.';
 
 const renderMD = markdown => {
   return DOMPurify.sanitize( marked.parse( markdown ) );
