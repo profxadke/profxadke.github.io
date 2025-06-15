@@ -29,3 +29,15 @@ const toggleTheme = () => {
     THEME = 1;
   } 
 }
+
+const another_denial = () => {
+  $_('GET', 'https://no.vision-xtech.com').then( resp => {
+    document.querySelector('#chat-response').innerText = resp['reason'];
+    document.querySelector('#chat-response').innerHTML += `<br /><br /><button style="background: #000;color: #0F0;border-radius: 8px;" onclick="another_denial()"> 4N0+H3R 0N3! </button>`;
+  });
+}
+
+
+$$( () => {
+  another_denial();
+})
