@@ -23,7 +23,7 @@ const appendQR = payload => {
         height: 300,
         type: "svg",
         data: payload,
-        image: "./img/ogo.png",
+        // image: "./img/ogo.png",
 	dotsOptions: {
             color: "#90EE90",
             type: "rounded"
