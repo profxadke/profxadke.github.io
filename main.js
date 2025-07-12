@@ -55,5 +55,22 @@ const typeWriter = () => {
 
 
 $$( () => {
+  Swal.fire({
+    title: "Humanity Verification!?",
+    text: "Are you a human and, are willin to poke around?",
+    icon: "question",
+    draggable: true,
+    showCloseButton: true,
+    showCancelButton: true,
+    focusConfirm: false,
+    confirmButtonText: `
+      <i class="fa fa-thumbs-up"></i> Absolutely!
+    `,
+    confirmButtonAriaLabel: "Thumbs up, absolutely!",
+    cancelButtonText: `
+      <i class="fa fa-thumbs-down"></i>
+    `,
+  cancelButtonAriaLabel: "Thumbs down"
+  })
   another_denial();
 })
