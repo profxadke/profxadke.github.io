@@ -72,13 +72,17 @@ const humanVerification = () => {
   cancelButtonAriaLabel: "Thumbs down"
   }).then( result => {
       if (result.isDismissed) {
+          if ( ['backdrop', 'close'].includes(result.dismiss) ) {
+              humanVerification();
+          } else if ( result.dismiss === 'cancel' ) {
+              document.body.innerHTML = `NO-BOTS.`;
+              humanVerification();
+          }
+      } else if (result.isConfirmed) {
           console.log(result);
-          humanVerification();
-      } else if (result.isDenied) {
-          console.log(result);
-          document.body.innerHTML = `NO-BOTS.`;
       } else {
-          console.log(result);
+          document.body.innerHTML = `NO-BOTS.`;
+          humanVerification();
       }
   })
 }
