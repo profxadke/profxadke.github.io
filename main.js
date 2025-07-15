@@ -78,7 +78,7 @@ const typeWriter = () => {
 const humanVerification = () => {
     Swal.fire({
     title: "Humanity Verification!?",
-    text: "Are you a human and, are willin to poke around?",
+    text: "Are you a human and, are willing to poke around?",
     icon: "question",
     draggable: true,
     showCloseButton: true,
