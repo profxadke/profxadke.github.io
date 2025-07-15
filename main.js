@@ -118,6 +118,7 @@ const humanVerification = () => {
 $$( () => {
   if (hasTouchScreen) {
       $('.is-1').remove();
+      $('#ego').innerText = `OSHO`;
   }; humanVerification();
   another_denial();
 })
