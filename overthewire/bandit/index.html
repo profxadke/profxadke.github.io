@@ -75,12 +75,14 @@ body {
 	    fetch(`/overthewire/bandit/levels/${location_hash}_${location_hash + 1}.md`).then( response => {
                 response.text().then( resp => {
                     document.getElementById('preview').innerHTML = renderMD(resp);
-					$('#links').innerHTML = `<a href="${location_hash-1}">Previous</a> | <i><a href="#creds">Credentials</a></i> | <a href="${location_hash+1}">Next</a>`;
+					if (location_hash > 0) {
+						$('#links').innerHTML = `<a href="#${location_hash-1}">Previous</a> | <i><a href="#creds">Credentials</a></i> | <a href="#${location_hash+1}">Next</a>`;
+					}
 		})
 	    })
 	} else if ( location.hash.slice(1) === 'creds' ) {
             obtainCreds().then( credentials => {
-			    $('#links').innerHTML = `<a href="/">Home</a>`;
+			    $('#links').innerHTML = `<a href="/overthewire/bandit/">Home</a>`;
                 let markup = "<table border='0'>";
 
 		// Outer loop: one row per inner array
