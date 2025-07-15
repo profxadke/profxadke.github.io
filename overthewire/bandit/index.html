@@ -32,7 +32,7 @@ body {
   <div id="preview"></div>
   <br /> <br />
   <hr />
-  <div id='links' style='text-align: center;'><i><a href="#creds">Credentials</a></i></div>
+  <div id='links' style='text-align: center;'><i><a href="#creds">Credentials</a></i> | <a href="#1">Next</a></div>
   <!-- Here, add a previous-next hash (if hash exists when the DOM loads, else Creds | Next)  -->
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" integrity="sha512-H+rglffZ6f5gF7UJgvH4Naa+fGCgjrHKMgoFOGmcPTRwR6oILo5R+gtzNrpDp7iMV3udbymBVjkeZGNz1Em4rQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -104,7 +104,7 @@ body {
 	else {
 		document.getElementById('preview').innerHTML = renderMD('# <u><center style="font-size: xxx-large;"> 404 - Not Found! </center></u>\n\n<a style="text-decoration: none;" href="/overthewire/bandit">Home</a>');
 	}
-    }; window.onhashchange = levelProvided; $$(levelProvided);
+    }; window.onhashchange = () => {location.reload()}; $$(levelProvided);
   </script>
 </body>
 </html>
