@@ -5,6 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Over The Wire: Bandit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
@@ -13,6 +16,7 @@
 body {
   margin: 20px;
   overflow-x: hidden;
+  font-family: 'Open Sans';
 }
 #title {
   text-align: center;
@@ -27,6 +31,9 @@ body {
   <br />
   <div id="preview"></div>
   <br /> <br />
+  <hr />
+  <div style='text-align: center;'><i><a href="#creds">Credentials</a></i></div>
+  <!-- Here, add a previous-next hash (if hash exists when the DOM loads, else Creds | Next)  -->
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" integrity="sha512-H+rglffZ6f5gF7UJgvH4Naa+fGCgjrHKMgoFOGmcPTRwR6oILo5R+gtzNrpDp7iMV3udbymBVjkeZGNz1Em4rQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
