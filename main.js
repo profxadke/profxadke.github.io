@@ -79,7 +79,11 @@ const humanVerification = () => {
               humanVerification();
           }
       } else if (result.isConfirmed) {
-          console.log(result);
+          if (result.value === true) {
+              console.log(result);
+          } else {
+              console.log(`I-SAID-NO-BOTS,PLEASE!`);
+          }
       } else {
           document.body.innerHTML = `NO-BOTS.`;
           humanVerification();
