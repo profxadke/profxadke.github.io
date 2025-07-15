@@ -71,6 +71,8 @@ $$( () => {
       <i class="fa fa-thumbs-down"></i>
     `,
   cancelButtonAriaLabel: "Thumbs down"
+  }).then(  result => {
+      console.log(result);
   })
   another_denial();
 })
