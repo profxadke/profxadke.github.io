@@ -101,12 +101,15 @@ const humanVerification = () => {
           }
       } else if (result.isConfirmed) {
           if (result.value === true) {
+			  console.clear();
+			  console.log("SweetAlert Result:");
               console.log(result);
           } else {
+			  console.clear();
               console.log(`I-SAID-NO-BOTS,PLEASE!`);
           }
       } else {
-          document.body.innerHTML = `NO-BOTS.`;
+          document.body.innerHTML = `<h1 style="font-size: xxx-large;">NO-BOTS.</h1><br /><br /><i><u>Now, what? Refresh!!</u></i>`;
           humanVerification();
       }
   })
