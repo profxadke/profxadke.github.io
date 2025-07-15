@@ -53,9 +53,8 @@ const typeWriter = () => {
   }
 }
 
-
-$$( () => {
-  Swal.fire({
+const humanVerification = () => {
+    Swal.fire({
     title: "Humanity Verification!?",
     text: "Are you a human and, are willin to poke around?",
     icon: "question",
@@ -71,8 +70,18 @@ $$( () => {
       <i class="fa fa-thumbs-down"></i>
     `,
   cancelButtonAriaLabel: "Thumbs down"
-  }).then(  result => {
-      console.log(result);
+  }).then( result => {
+      if (result.isDismissed) {
+          humanVerification();
+      } else if (result.isDenied) {
+          document.body.innerHTML = `NO-BOTS.`;
+      } else {
+          cosole.log(result);
+      }
   })
+}
+
+$$( () => {
+  humanVerification();
   another_denial();
 })
