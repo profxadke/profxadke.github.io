@@ -72,11 +72,12 @@ const humanVerification = () => {
   cancelButtonAriaLabel: "Thumbs down"
   }).then( result => {
       if (result.isDismissed) {
+          console.log(result);
           humanVerification();
       } else if (result.isDenied) {
           document.body.innerHTML = `NO-BOTS.`;
       } else {
-          cosole.log(result);
+          console.log(result);
       }
   })
 }
