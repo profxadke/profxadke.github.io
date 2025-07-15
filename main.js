@@ -75,6 +75,7 @@ const humanVerification = () => {
           console.log(result);
           humanVerification();
       } else if (result.isDenied) {
+          console.log(result);
           document.body.innerHTML = `NO-BOTS.`;
       } else {
           console.log(result);
