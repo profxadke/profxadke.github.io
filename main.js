@@ -97,8 +97,7 @@ const humanVerification = () => {
           if ( ['backdrop', 'close'].includes(result.dismiss) ) {
               humanVerification();
           } else if ( result.dismiss === 'cancel' ) {
-              document.body.innerHTML = `NO-BOTS.`;
-              humanVerification();
+              document.body.innerHTML = `<h1 style="font-size: xxx-large;">NO-BOTS.</h1><br /><br /><i><u>Now, what? Refresh!!</u></i>`;
           }
       } else if (result.isConfirmed) {
           if (result.value === true) {
