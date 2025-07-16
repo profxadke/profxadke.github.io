@@ -1,6 +1,16 @@
 let QR_GENERATED = 0;
 
+const resetQRprops = () => {
+    document.querySelector('.qrImgURL').value = "https://osho.is-a.dev/qrencode/img/ogo.png";
+    document.querySelector('.qrColor').value = "#90EE90";
+    document.querySelector('.qrcontent').value = "";
+    if ( Boolean ( document.querySelector('#canvas') ) ) {
+        document.querySelector('#canvas').remove();
+        document.querySelector('#output').innerHTML = `<div id="canvas"></div>`;
+    };
+}
 
+/*
 const encode2QR = () => {
   if (QR_GENERATED) {
     document.querySelector('img').remove();
@@ -13,6 +23,7 @@ const encode2QR = () => {
 	     correctLevel : QRCode.CorrectLevel.H
 	 }); QR_GENERATED = 1; return qrcode
 }
+*/
 
 const appendQR = payload => {
     if ( Boolean ( document.querySelector('#canvas') ) ) {
@@ -23,9 +34,9 @@ const appendQR = payload => {
         height: 300,
         type: "svg",
         data: payload,
-        // image: "./img/ogo.png",
+        image: document.querySelector('.qrImgURL').value,
 	dotsOptions: {
-            color: "#90EE90",
+            color: document.querySelector('.qrColor').value,
             type: "rounded"
         },
         backgroundOptions: {
@@ -44,3 +55,4 @@ const genQr = () => {
 
 // document.querySelector('textarea').onkeyup = encode2QR;
 document.querySelector('textarea').onkeyup = genQr;
+resetQRprops();
