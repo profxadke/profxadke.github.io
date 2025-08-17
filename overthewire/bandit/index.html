@@ -89,7 +89,7 @@ body {
         return Papa.parse(payload.trim()).data;
     };
     const obtainCreds = async () => {
-        resp = await fetch('https://osho.is-a.dev/overthewire/bandit/credentials.csv');
+        resp = await fetch('/overthewire/bandit/credentials.csv');
 	data = await resp.text();
 	return parseCSV(data.trim())
     }; obtainCreds().then( credentials => {
@@ -99,7 +99,8 @@ body {
     // Dynamic Routing for CSR site via fetch and markdown rendering..
     const levelProvided = () => {
 	const location_hash = Number(location.hash.slice(1));
-	if ( isFinite(location_hash) && location_hash <= 33 && location_hash >= 0 ) {
+	// if ( isFinite(location_hash) && location_hash <= 33 && location_hash >= 0 ) { /* TMP CHANGES */
+	if ( isFinite(location_hash) && location_hash <= 11 && location_hash >= 0 ) {
 	    fetch(`/overthewire/bandit/levels/${location_hash}_${location_hash + 1}.md`).then( response => {
                 response.text().then( resp => {
                     document.getElementById('preview').innerHTML = renderMD(resp);

@@ -56,13 +56,29 @@ if ("maxTouchPoints" in navigator) {
     }
 }
 
+const random_choice = arr => {
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex]
+}
+
+const parseCSV = payload => {
+    return Papa.parse(payload.trim()).data;
+};
+
 const another_denial = () => {
   document.querySelector('#chat-response').innerHTML = '';
-  $_('GET', 'https://no.vision-xtech.com').then( resp => {
-    txt = resp['reason'];
-    i = 0;
-    typeWriter();
-  });
+  fetch('quotes.csv').then( resp => {
+    resp.text().then( csv => {
+      parsed = parseCSV(csv);
+      random_quote = random_choice(parsed);
+      author = random_quote[0];
+      quote = `${random_quote[1]} - ${author}`;
+      console.log(quote);
+      txt = quote;
+      i = 0;
+      typeWriter();
+    })
+  })
 }
 
 const typeWriter = () => {
