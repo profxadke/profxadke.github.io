@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Group Calling</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        #videos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        video {
+            width: 300px;
+            height: 225px;
+            margin: 10px;
+            border: 2px solid #000;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        #my-id {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>P2P Group Calling</h1>
+    <div id="my-id">Your ID: </div>
+    <div class="controls">
+        <input type="text" id="peer-id-input" placeholder="Enter Peer ID">
+        <button id="connect-btn">Connect</button>
+        <button id="hang-up-btn">Hang Up</button>
+    </div>
+    <div id="videos">
+        <video id="local-video" autoplay muted></video>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script>
+        const localVideo = document.getElementById('local-video');
+        const videosContainer = document.getElementById('videos');
+        const myIdSpan = document.getElementById('my-id');
+        const peerIdInput = document.getElementById('peer-id-input');
+        const connectBtn = document.getElementById('connect-btn');
+        const hangUpBtn = document.getElementById('hang-up-btn');
+
+        let localStream;
+        let peer;
+        const calls = new Map();
+        const dataConnections = new Map();
+
+        // Get user media
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                localStream = stream;
+                localVideo.srcObject = stream;
+                initializePeer();
+            })
+            .catch(error => {
+                console.error('Error accessing media devices.', error);
+            });
+
+        function initializePeer() {
+            let peerId = localStorage.getItem('peerId');
+            if (peerId) {
+                peer = new Peer(peerId);
+            } else {
+                peer = new Peer(String(Math.floor(Math.random() * 9000) + 1000));
+            }
+
+            peer.on('open', id => {
+                if (!localStorage.getItem('peerId')) {
+                    localStorage.setItem('peerId', id);
+                }
+                myIdSpan.textContent = `Your ID: ${id}`;
+                startHeartbeat();
+            });
+
+            peer.on('call', call => {
+                call.answer(localStream);
+                handleCall(call);
+            });
+
+            peer.on('connection', conn => {
+                handleDataConnection(conn);
+            });
+
+            peer.on('error', err => {
+                console.error('PeerJS error:', err);
+            });
+        }
+
+        function handleCall(call) {
+            if (!calls.has(call.peer)) {
+                const remoteVideo = document.createElement('video');
+                remoteVideo.autoplay = true;
+                remoteVideo.dataset.peerId = call.peer;
+                videosContainer.appendChild(remoteVideo);
+
+                call.on('stream', remoteStream => {
+                    remoteVideo.srcObject = remoteStream;
+                });
+
+                call.on('close', () => {
+                    remoteVideo.remove();
+                    calls.delete(call.peer);
+                    const conn = dataConnections.get(call.peer);
+                    if (conn) {
+                        conn.connection.close();
+                    }
+                });
+
+                call.on('error', err => {
+                    console.error('Call error:', err);
+                    remoteVideo.remove();
+                    calls.delete(call.peer);
+                    const conn = dataConnections.get(call.peer);
+                    if (conn) {
+                        conn.connection.close();
+                    }
+                });
+
+                calls.set(call.peer, call);
+            }
+        }
+
+        function handleDataConnection(conn) {
+            conn.on('open', () => {
+                dataConnections.set(conn.peer, { connection: conn, lastHeartbeat: Date.now() });
+            });
+
+            conn.on('data', data => {
+                if (data.type === 'hang-up') {
+                    const call = calls.get(conn.peer);
+                    if (call) {
+                        call.close();
+                    }
+                } else if (data.type === 'heartbeat') {
+                    const dataConn = dataConnections.get(conn.peer);
+                    if (dataConn) {
+                        dataConn.lastHeartbeat = Date.now();
+                    }
+                }
+            });
+
+            conn.on('close', () => {
+                dataConnections.delete(conn.peer);
+                const call = calls.get(conn.peer);
+                if (call) {
+                    call.close();
+                }
+            });
+        }
+
+        function startHeartbeat() {
+            setInterval(() => {
+                for (const [peerId, conn] of dataConnections.entries()) {
+                    conn.connection.send({ type: 'heartbeat' });
+                }
+            }, 5000); // Send heartbeat every 5 seconds
+
+            setInterval(() => {
+                const now = Date.now();
+                for (const [peerId, dataConn] of dataConnections.entries()) {
+                    if (now - dataConn.lastHeartbeat > 15000) { // 15 seconds timeout
+                        const call = calls.get(peerId);
+                        if (call) {
+                            call.close();
+                        }
+                        dataConn.connection.close();
+                    }
+                }
+            }, 10000); // Check heartbeats every 10 seconds
+        }
+
+        connectBtn.addEventListener('click', () => {
+            const peerId = peerIdInput.value.trim();
+            if (peerId && peerId !== peer.id) {
+                const call = peer.call(peerId, localStream);
+                handleCall(call);
+
+                const conn = peer.connect(peerId);
+                handleDataConnection(conn);
+            }
+            peerIdInput.value = '';
+        });
+
+        hangUpBtn.addEventListener('click', () => {
+            for (const [peerId, conn] of dataConnections.entries()) {
+                conn.connection.send({ type: 'hang-up' });
+            }
+            for (const [peerId, call] of calls.entries()) {
+                call.close();
+            }
+        });
+    </script>
+</body>
+</html>
