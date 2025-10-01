@@ -1,0 +1,577 @@
+<!DOCTYPE htm`>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <title>P2P Group Calling</title>
+    <style>
+        /* Add any custom styles here if needed */
+        .video-container {
+            position: relative;
+        }
+        .status-icons {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        .status-icons i {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .video-container .info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10;
+        }
+        .video-container .info img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+
+        .hang-up-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: none;
+            z-index: 20;
+        }
+
+        .block-btn {
+            position: absolute;
+            top: 10px;
+            right: 50px;
+            display: none;
+            z-index: 20;
+        }
+
+        .video-container:hover .hang-up-btn,
+        .video-container:hover .block-btn {
+            display: inline-flex;
+        }
+    </style>
+</head>
+<body>
+    <section class="hero is-primary">
+        <div class="hero-body">
+            <p class="title">
+                P2P Group Calling
+            </p>
+            <p class="subtitle" id="my-id">
+                Your ID: 
+            </p>
+            <p class="subtitle" style="text-align: right;color: #000;">WARNING: Under Construction - Expect Bugs.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-one-quarter">
+                    <div class="box" style="display: none;">
+                        <div class="field">
+                            <label class="label">Connect to Peer</label>
+                            <div class="control">
+                                <input class="input" type="text" id="peer-id-input" placeholder="Enter Peer ID">
+                            </div>
+                        </div>
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button class="button is-link" id="connect-btn">Connect</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <p class="menu-label">
+                            Controls
+                        </p>
+                        <div class="buttons">
+                            <button class="button is-danger" id="hang-up-btn" alt="Hang Up All Peer(s)"><i class="fas fa-trash"></i></button>
+                            <button class="button" id="mute-audio-btn"><i class="fas fa-microphone-slash"></i></button>
+                            <button class="button" id="mute-video-btn"><i class="fas fa-video-slash"></i></button>
+                            <button class="button" id="reset-id">Reset ID</button>
+                            <button class="button is-info" id="update-profile-btn"><i class="fas fa-gear"></i></button>
+                        </div>
+                    </div>
+                    <nav class="panel">
+                        <p class="panel-heading">
+                            Available Peers
+                        </p>
+                        <div id="peer-list" class="panel-block">
+                            <!-- Peer list will be populated here -->
+                        </div>
+                    </nav>
+                </div>
+                <div class="column">
+                    <div id="videos" class="columns is-multiline">
+                        <div class="column is-half">
+                            <div class="box video-container" id="local-video-container" style="background: #000;">
+                                <video id="local-video" autoplay muted></video>
+                                <div class="status-icons">
+                                    <i class="fas fa-microphone-slash" id="local-audio-mute-icon" style="display: none;"></i>
+                                    <i class="fas fa-video-slash" id="local-video-mute-icon" style="display: none;"></i>
+                                </div>
+                                <div class="info">
+                                    <img id="local-avatar" src="" alt="Avatar">
+                                    <span id="local-name"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="call-notification" class="notification is-info" style="display: none; position: fixed; top: 80px; right: 20px; z-index: 1000;">
+        <p id="call-notification-text"></p>
+        <div class="buttons mt-2">
+            <button id="accept-call-btn" class="button is-success">Accept</button>
+            <button id="deny-call-btn" class="button is-danger">Deny</button>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Update Profile</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                        <input class="input" type="text" id="name-input" placeholder="Enter your name">
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button id="save-profile-btn" class="button is-success">Save changes</button>
+                <button class="button">Cancel</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script>
+        const localVideo = document.getElementById('local-video');
+        const videosContainer = document.getElementById('videos');
+        const myIdSpan = document.getElementById('my-id');
+        const peerIdInput = document.getElementById('peer-id-input');
+        const connectBtn = document.getElementById('connect-btn');
+        const hangUpBtn = document.getElementById('hang-up-btn');
+        const muteAudioBtn = document.getElementById('mute-audio-btn');
+        const muteVideoBtn = document.getElementById('mute-video-btn');
+        const resetIdBtn = document.getElementById('reset-id');
+        const peerList = document.getElementById('peer-list');
+        const callNotification = document.getElementById('call-notification');
+        const callNotificationText = document.getElementById('call-notification-text');
+        const acceptCallBtn = document.getElementById('accept-call-btn');
+        const denyCallBtn = document.getElementById('deny-call-btn');
+        const updateProfileBtn = document.getElementById('update-profile-btn');
+        const profileModal = document.getElementById('profile-modal');
+        const nameInput = document.getElementById('name-input');
+        const saveProfileBtn = document.getElementById('save-profile-btn');
+        const localVideoContainer = document.getElementById('local-video-container');
+        const localAudioMuteIcon = document.getElementById('local-audio-mute-icon');
+        const localVideoMuteIcon = document.getElementById('local-video-mute-icon');
+        const localAvatar = document.getElementById('local-avatar');
+        const localName = document.getElementById('local-name');
+
+        let localStream;
+        let peer;
+        const calls = new Map();
+        const dataConnections = new Map();
+        let incomingCall;
+
+        const localMetadata = {
+            name: localStorage.getItem('userName') || 'User' + Math.floor(Math.random() * 1000),
+            avatar_url: localStorage.getItem('userAvatarUrl') || `https://i.pravatar.cc/150?u=${Math.random()}`,
+            custom: { 
+                status: 'Available'
+            }
+        };
+
+        // Set initial local metadata display
+        localAvatar.src = localMetadata.avatar_url;
+        localName.innerText = localMetadata.name;
+
+        let blockedPeers = new Set(JSON.parse(localStorage.getItem('blockedPeers') || '[]'));
+
+        function generatePeerId () {
+          return String(Math.floor(Math.random() * 900000) + 100000);
+        }
+
+        // Get user media
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                localStream = stream;
+                localVideo.srcObject = stream;
+                initializePeer();
+            })
+            .catch(error => {
+                console.error('Error accessing media devices.', error);
+            });
+
+        function initializePeer() {
+            let peerId = localStorage.getItem('peerId');
+            if (!peerId) {
+                peerId = generatePeerId();
+                localStorage.setItem('peerId', peerId);
+            }
+            peer = new Peer(peerId, { host: "dev.blackstonenp.com", port: 80, path: "/app", key: "xadkeg" });
+
+            peer.on('open', id => {
+                myIdSpan.textContent = `Your ID: ${id}`;
+                updatePeerList();
+                setInterval(updatePeerList, 10000);
+                setInterval(checkConnectedPeers, 15000);
+            });
+
+            peer.on('call', call => {
+                call.answer(localStream);
+                handleCall(call);
+            });
+
+            peer.on('connection', conn => {
+                handleDataConnection(conn);
+            });
+
+            peer.on('error', err => {
+                console.error('PeerJS error:', err);
+            });
+        }
+
+        function handleCall(call) {
+            if (!calls.has(call.peer)) {
+                const videoColumn = document.createElement('div');
+                videoColumn.className = 'column is-half';
+
+                const videoBox = document.createElement('div');
+                videoBox.className = 'box video-container';
+                videoBox.dataset.peerId = call.peer;
+
+                const remoteVideo = document.createElement('video');
+                remoteVideo.style.maxHeight = '100%';
+                remoteVideo.style.maxWidth = '100%';
+                remoteVideo.autoplay = true;
+
+                const statusIcons = document.createElement('div');
+                statusIcons.className = 'status-icons';
+                statusIcons.innerHTML = `
+                    <i class="fas fa-microphone-slash" style="display: none;"></i>
+                    <i class="fas fa-video-slash" style="display: none;"></i>
+                `;
+
+                const info = document.createElement('div');
+                info.className = 'info';
+                const metadata = dataConnections.get(call.peer)?.metadata;
+                if (metadata) {
+                    const avatar = document.createElement('img');
+                    avatar.src = metadata.avatar_url;
+                    const name = document.createElement('span');
+                    name.innerText = metadata.name;
+                    info.appendChild(avatar);
+                    info.appendChild(name);
+                }
+
+                const hangUpBtn = document.createElement('a');
+                hangUpBtn.className = 'button is-danger is-small hang-up-btn';
+                hangUpBtn.innerHTML = '<i class="fas fa-phone-slash"></i>';
+                hangUpBtn.addEventListener('click', () => hangUpPeer(call.peer));
+
+                const blockBtn = document.createElement('a');
+                blockBtn.style.display = 'none';
+                blockBtn.className = 'button is-warning is-small block-btn';
+                blockBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                blockBtn.addEventListener('click', () => blockPeer(call.peer));
+
+                videoBox.appendChild(remoteVideo);
+                videoBox.appendChild(statusIcons);
+                videoBox.appendChild(info);
+                videoBox.appendChild(hangUpBtn);
+                videoBox.appendChild(blockBtn);
+                videoColumn.appendChild(videoBox);
+                videosContainer.appendChild(videoColumn);
+
+                call.on('stream', remoteStream => {
+                    remoteVideo.srcObject = remoteStream;
+                });
+
+                call.on('close', () => {
+                    videoColumn.remove();
+                    calls.delete(call.peer);
+                });
+
+                calls.set(call.peer, call);
+            }
+        }
+
+        function handleDataConnection(conn) {
+            if (blockedPeers.has(conn.peer)) {
+                conn.on('open', () => conn.close());
+                return;
+            }
+
+            conn.on('data', data => {
+                const dataConn = dataConnections.get(conn.peer);
+
+                switch (data.type) {
+                    case 'call-request':
+                        showCallNotification(conn, data.metadata, { audioMuted: data.audioMuted, videoMuted: data.videoMuted });
+                        break;
+                    case 'call-accepted':
+                        if (dataConn?.timeoutId) {
+                            clearTimeout(dataConn.timeoutId);
+                        }
+                        handleCallAccepted(conn, data.metadata);
+                        const mediaCall = peer.call(conn.peer, localStream);
+                        handleCall(mediaCall);
+                        updateMuteStatus(conn.peer, { audioMuted: data.audioMuted, videoMuted: data.videoMuted });
+                        break;
+                    case 'call-denied':
+                        if (dataConn?.timeoutId) {
+                            clearTimeout(dataConn.timeoutId);
+                        }
+                        alert(`${conn.peer} denied your call.`);
+                        conn.close();
+                        break;
+                    case 'hang-up':
+                        const call = calls.get(conn.peer);
+                        if (call) call.close();
+                        conn.close();
+                        break;
+                    case 'mute-status':
+                        updateMuteStatus(conn.peer, data);
+                        break;
+                }
+            });
+
+            conn.on('close', () => {
+                if (incomingCall && incomingCall.conn.peer === conn.peer) {
+                    callNotification.style.display = 'none';
+                    incomingCall = null;
+                }
+                dataConnections.delete(conn.peer);
+                const call = calls.get(conn.peer);
+                if (call) call.close();
+            });
+        }
+
+        function showCallNotification(conn, metadata, muteStatus) {
+            incomingCall = { conn, metadata, muteStatus };
+            callNotificationText.innerText = `Incoming call from ${metadata.name}`;
+            callNotification.style.display = 'block';
+        }
+
+        function handleCallAccepted(conn, metadata) {
+            dataConnections.set(conn.peer, { connection: conn, metadata });
+        }
+
+        function updateMuteStatus(peerId, data) {
+            const videoContainer = document.querySelector(`.video-container[data-peer-id="${peerId}"]`);
+            if (videoContainer) {
+                const audioIcon = videoContainer.querySelector('.fa-microphone-slash');
+                const videoIcon = videoContainer.querySelector('.fa-video-slash');
+                audioIcon.style.display = data.audioMuted ? 'inline-block' : 'none';
+                videoIcon.style.display = data.videoMuted ? 'inline-block' : 'none';
+            }
+        }
+
+        function blockPeer(peerId) {
+            blockedPeers.add(peerId);
+            localStorage.setItem('blockedPeers', JSON.stringify([...blockedPeers]));
+            const call = calls.get(peerId);
+            if (call) call.close();
+            const conn = dataConnections.get(peerId);
+            if (conn) conn.connection.close();
+            updatePeerList();
+        }
+
+        function hangUpPeer(peerId) {
+            const call = calls.get(peerId);
+            if (call) {
+                call.close();
+            }
+            const conn = dataConnections.get(peerId);
+            if (conn && conn.connection) {
+                conn.connection.send({ type: 'hang-up' });
+                conn.connection.close();
+            }
+        }
+
+        function updatePeerList() {
+            peer.listAllPeers(peers => {
+                peerList.innerHTML = '';
+                peers.forEach(p => {
+                    if (p !== peer.id && !blockedPeers.has(p)) {
+                        const a = document.createElement('a');
+                        a.className = 'panel-block';
+                        a.innerText = p;
+                        a.addEventListener('click', () => {
+                            peerIdInput.value = p;
+                            connectBtn.click();
+                        });
+                        peerList.appendChild(a);
+                    }
+                });
+            });
+        }
+
+        function checkConnectedPeers() {
+            peer.listAllPeers(peers => {
+                for (const [peerId, call] of calls.entries()) {
+                    if (!peers.includes(peerId)) {
+                        call.close();
+                    }
+                }
+            });
+        }
+
+        function handleConnect() {
+            const peerId = peerIdInput.value.trim();
+            if (peerId && peerId !== peer.id && !calls.has(peerId)) {
+                const conn = peer.connect(peerId);
+                const timeoutId = setTimeout(() => {
+                    alert(`No answer from ${peerId}`);
+                    conn.close();
+                }, 30000);
+
+                conn.on('open', () => {
+                    dataConnections.set(peerId, { connection: conn, timeoutId });
+                    conn.send({ 
+                        type: 'call-request', 
+                        metadata: localMetadata,
+                        audioMuted: !localStream.getAudioTracks()[0].enabled,
+                        videoMuted: !localStream.getVideoTracks()[0].enabled
+                    });
+                });
+                handleDataConnection(conn);
+            }
+            peerIdInput.value = '';
+        }
+
+        acceptCallBtn.addEventListener('click', () => {
+            if (incomingCall) {
+                incomingCall.conn.send({ 
+                    type: 'call-accepted', 
+                    metadata: localMetadata,
+                    audioMuted: !localStream.getAudioTracks()[0].enabled,
+                    videoMuted: !localStream.getVideoTracks()[0].enabled
+                });
+                dataConnections.set(incomingCall.conn.peer, { connection: incomingCall.conn, metadata: incomingCall.metadata });
+                
+                const call = peer.call(incomingCall.conn.peer, localStream);
+                handleCall(call);
+                updateMuteStatus(incomingCall.conn.peer, incomingCall.muteStatus);
+
+                callNotification.style.display = 'none';
+                incomingCall = null;
+            }
+        });
+
+        denyCallBtn.addEventListener('click', () => {
+            if (incomingCall) {
+                incomingCall.conn.send({ type: 'call-denied' });
+                incomingCall.conn.close();
+                callNotification.style.display = 'none';
+                incomingCall = null;
+            }
+        });
+
+        peerIdInput.addEventListener('keyup', event => {
+            if (event.key === 'Enter') handleConnect();
+        });
+
+        connectBtn.addEventListener('click', handleConnect);
+
+        hangUpBtn.addEventListener('click', () => {
+            for (const [peerId, dataConn] of dataConnections.entries()) {
+                if(dataConn.connection) {
+                    dataConn.connection.send({ type: 'hang-up' });
+                }
+            }
+        });
+
+        muteAudioBtn.addEventListener('click', () => {
+            const audioTrack = localStream.getAudioTracks()[0];
+            audioTrack.enabled = !audioTrack.enabled;
+            // muteAudioBtn.innerText = audioTrack.enabled ? 'Mute Audio' : 'Unmute Audio';
+            muteAudioBtn.innerHTML = audioTrack.enabled ? '<i class="fas fa-microphone"></i>' : '<i class="fas fa-microphone-slash"></i>';
+            localAudioMuteIcon.style.display = audioTrack.enabled ? 'none' : 'inline-block';
+            for (const [peerId, dataConn] of dataConnections.entries()) {
+                if(dataConn.connection) {
+                    dataConn.connection.send({ type: 'mute-status', audioMuted: !audioTrack.enabled, videoMuted: !localStream.getVideoTracks()[0].enabled });
+                }
+            }
+        });
+
+        muteVideoBtn.addEventListener('click', () => {
+            const videoTrack = localStream.getVideoTracks()[0];
+            videoTrack.enabled = !videoTrack.enabled;
+            // muteVideoBtn.innerText = videoTrack.enabled ? 'Mute Video' : 'Unmute Video';
+            muteVideoBtn.innerHTML = videoTrack.enabled ? '<i class="fas fa-video"></i>' : '<i class="fas fa-video-slash"></i>';
+            localVideoMuteIcon.style.display = videoTrack.enabled ? 'none' : 'inline-block';
+            for (const [peerId, dataConn] of dataConnections.entries()) {
+                if(dataConn.connection) {
+                    dataConn.connection.send({ type: 'mute-status', audioMuted: !localStream.getAudioTracks()[0].enabled, videoMuted: !videoTrack.enabled });
+                }
+            }
+        });
+
+        resetIdBtn.addEventListener('click', () => {
+            peer.destroy();
+            let peerId = generatePeerId();
+            localStorage.setItem('peerId', peerId);
+            initializePeer();
+        });
+
+        updateProfileBtn.addEventListener('click', () => {
+            profileModal.classList.add('is-active');
+            nameInput.value = localMetadata.name;
+        });
+
+        profileModal.querySelector('.modal-background').addEventListener('click', () => {
+            profileModal.classList.remove('is-active');
+        });
+
+        profileModal.querySelector('.delete').addEventListener('click', () => {
+            profileModal.classList.remove('is-active');
+        });
+
+        profileModal.querySelector('.button:not(.is-success)').addEventListener('click', () => {
+            profileModal.classList.remove('is-active');
+        });
+
+        saveProfileBtn.addEventListener('click', () => {
+            const newName = nameInput.value.trim();
+            if (newName) {
+                localMetadata.name = newName;
+                localStorage.setItem('userName', newName);
+                // Generate a new avatar URL when the name is updated
+                localMetadata.avatar_url = `https://i.pravatar.cc/150?u=${Math.random()}`;
+                localStorage.setItem('userAvatarUrl', localMetadata.avatar_url);
+                localAvatar.src = localMetadata.avatar_url;
+                localName.innerText = localMetadata.name;
+                profileModal.classList.remove('is-active');
+            }
+        });
+    </script>
+</body>
+</html>
