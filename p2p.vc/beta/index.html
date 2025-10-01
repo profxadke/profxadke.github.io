@@ -235,7 +235,7 @@
                 peerId = generatePeerId();
                 localStorage.setItem('peerId', peerId);
             }
-            peer = new Peer(peerId, { host: "dev.blackstonenp.com", port: 80, path: "/app", key: "xadkeg" });
+            peer = new Peer(peerId, { host: "dev.blackstonenp.com", port: 443, path: "/app", key: "xadkeg" });
 
             peer.on('open', id => {
                 myIdSpan.textContent = `Your ID: ${id}`;
