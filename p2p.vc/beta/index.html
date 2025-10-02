@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <title>P2P Group Calling</title>
     <style>
-        /* Add any custom styles here if needed */
         .video-container {
             position: relative;
         }
@@ -53,6 +52,14 @@
             z-index: 20;
         }
 
+        .full-scr-btn {
+            position: absolute;
+            top: 10px;
+            right: 200px;
+            display: none;
+            z-index: 20;
+        }
+
         .block-btn {
             position: absolute;
             top: 10px;
@@ -62,6 +69,7 @@
         }
 
         .video-container:hover .hang-up-btn,
+        .video-container:hover .full-scr-btn,
         .video-container:hover .block-btn {
             display: inline-flex;
         }
@@ -105,7 +113,7 @@
                             <button class="button is-danger" id="hang-up-btn" alt="Hang Up All Peer(s)"><i class="fas fa-trash"></i></button>
                             <button class="button" id="mute-audio-btn"><i class="fas fa-microphone-slash"></i></button>
                             <button class="button" id="mute-video-btn"><i class="fas fa-video-slash"></i></button>
-                            <button class="button" data-tooltip="UNTESTED" id="share-screen-btn"><i class="fas fa-desktop"></i></button>
+                            <button class="button" data-tooltip="UNTESTED" id="share-screen-btn"><i class="fas fa-desktop"></i></button>  <!-- TODO: [ Auto-Hide/Remove this button on devices lacking screen-sharing functionality. ] -->
                             <button class="button" id="reset-id">Reset ID</button>
                             <button class="button is-info" id="update-profile-btn"><i class="fas fa-gear"></i></button>
                         </div>
@@ -114,9 +122,7 @@
                         <p class="panel-heading">
                             Available Peers
                         </p>
-                        <div id="peer-list" class="panel-block">
-                            <!-- Peer list will be populated here -->
-                        </div>
+                        <div id="peer-list" class="panel-block"></div>
                     </nav>
                 </div>
                 <div class="column">
@@ -243,7 +249,8 @@
                 peerId = generatePeerId();
                 localStorage.setItem('peerId', peerId);
             }
-            peer = new Peer(peerId, { host: "dev.blackstonenp.com", port: 443, path: "/app", key: "xadkeg" });
+            peer = new Peer(peerId, { host: "dev.blackstonenp.com", port: 
+443, path: "/app", key: "xadkeg" });
 
             peer.on('open', id => {
                 myIdSpan.textContent = `Your ID: ${id}`;
@@ -340,7 +347,23 @@
                 blockBtn.innerHTML = '<i class="fas fa-trash"></i>';
                 blockBtn.addEventListener('click', () => blockPeer(call.peer));
 
+                const fullScrBtn = document.createElement('a');
+                fullScrBtn.className = 'button is-info is-small full-scr-btn';
+                fullScrBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                fullScrBtn.addEventListener('click', e => {
+                  target = e.target.previousElementSibling;
+                  if (target.requestFullscreen)
+                    target.requestFullscreen();
+                  else if (div.webkitRequestFullscreen)
+                    target.webkitRequestFullscreen();
+                  else if (div.msRequestFullScreen)
+                    target.msRequestFullScreen();
+                  else
+                    e.target.remove();
+                })
+
                 videoBox.appendChild(remoteVideo);
+                videoBox.appendChild(fullScrBtn);
                 videoBox.appendChild(statusIcons);
                 videoBox.appendChild(info);
                 videoBox.appendChild(hangUpBtn);
@@ -727,7 +750,7 @@
                 localName.innerText = localMetadata.name;
                 profileModal.classList.remove('is-active');
             }
-        });
+        });  // TODO: Port this utilizing yokto.js!
     </script>
 </body>
 </html>
