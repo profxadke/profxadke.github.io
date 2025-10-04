@@ -1,4 +1,4 @@
-<!DOCTYPE htm`>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativebulma/bulma-tooltip@1.2.0/dist/bulma-tooltip.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <title>P2P Group Calling</title>
+    <title>P2P Group Calling (Yokto.js)</title>
     <style>
         .video-container {
             position: relative;
@@ -79,12 +79,12 @@
     <section class="hero is-primary">
         <div class="hero-body">
             <p class="title">
-                P2P Group Calling
+                P2P Group Calling (Yokto.js Edition)
             </p>
             <p class="subtitle" id="my-id">
-                Your ID: 
+                Your ID:
             </p>
-            <p class="subtitle" style="text-align: right;color: #000;">WARNING: Under Construction - Expect Bugs.</p>
+            <p class="subtitle" style="text-align: right;color: #000;">Powered by Yokto.js</p>
         </div>
     </section>
 
@@ -113,7 +113,7 @@
                             <button class="button is-danger" id="hang-up-btn" alt="Hang Up All Peer(s)"><i class="fas fa-trash"></i></button>
                             <button class="button" id="mute-audio-btn"><i class="fas fa-microphone-slash"></i></button>
                             <button class="button" id="mute-video-btn"><i class="fas fa-video-slash"></i></button>
-                            <button class="button" data-tooltip="UNTESTED" id="share-screen-btn"><i class="fas fa-desktop"></i></button>  <!-- TODO: [ Auto-Hide/Remove this button on devices lacking screen-sharing functionality. ] -->
+                            <button class="button" data-tooltip="Screen Sharing" id="share-screen-btn"><i class="fas fa-desktop"></i></button>
                             <button class="button" id="reset-id">Reset ID</button>
                             <button class="button is-info" id="update-profile-btn"><i class="fas fa-gear"></i></button>
                         </div>
@@ -177,595 +177,603 @@
     </div>
 
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/profxadke/yokto.js@main/yokto.min.js"></script>
     <script>
-        const localVideo = document.getElementById('local-video');
-        const videosContainer = document.getElementById('videos');
-        const myIdSpan = document.getElementById('my-id');
-        const peerIdInput = document.getElementById('peer-id-input');
-        const connectBtn = document.getElementById('connect-btn');
-        const hangUpBtn = document.getElementById('hang-up-btn');
-        const muteAudioBtn = document.getElementById('mute-audio-btn');
-        const muteVideoBtn = document.getElementById('mute-video-btn');
-        const shareScreenBtn = document.getElementById('share-screen-btn');
-        const resetIdBtn = document.getElementById('reset-id');
-        const peerList = document.getElementById('peer-list');
-        const callNotification = document.getElementById('call-notification');
-        const callNotificationText = document.getElementById('call-notification-text');
-        const acceptCallBtn = document.getElementById('accept-call-btn');
-        const denyCallBtn = document.getElementById('deny-call-btn');
-        const updateProfileBtn = document.getElementById('update-profile-btn');
-        const profileModal = document.getElementById('profile-modal');
-        const nameInput = document.getElementById('name-input');
-        const saveProfileBtn = document.getElementById('save-profile-btn');
-        const localVideoContainer = document.getElementById('local-video-container');
-        const localAudioMuteIcon = document.getElementById('local-audio-mute-icon');
-        const localVideoMuteIcon = document.getElementById('local-video-mute-icon');
-        const localAvatar = document.getElementById('local-avatar');
-        const localName = document.getElementById('local-name');
+        $$(() => {
+            // Using yokto.js vNode selectors
+            const localVideo = $('#local-video');
+            const videosContainer = $('#videos');
+            const myIdSpan = $('#my-id');
+            const peerIdInput = $('#peer-id-input');
+            const connectBtn = $('#connect-btn');
+            const hangUpBtn = $('#hang-up-btn');
+            const muteAudioBtn = $('#mute-audio-btn');
+            const muteVideoBtn = $('#mute-video-btn');
+            const shareScreenBtn = $('#share-screen-btn');
+            const resetIdBtn = $('#reset-id');
+            const peerList = $('#peer-list');
+            const callNotification = $('#call-notification');
+            const callNotificationText = $('#call-notification-text');
+            const acceptCallBtn = $('#accept-call-btn');
+            const denyCallBtn = $('#deny-call-btn');
+            const updateProfileBtn = $('#update-profile-btn');
+            const profileModal = $('#profile-modal');
+            const nameInput = $('#name-input');
+            const saveProfileBtn = $('#save-profile-btn');
+            const localVideoContainer = $('#local-video-container');
+            const localAudioMuteIcon = $('#local-audio-mute-icon');
+            const localVideoMuteIcon = $('#local-video-mute-icon');
+            const localAvatar = $('#local-avatar');
+            const localName = $('#local-name');
 
-        let localStream;
-        let peer;
-        const calls = new Map();
-        const dataConnections = new Map();
-        let incomingCall;
-        let isScreenSharing = false;
-        let cameraStream; // To store the original camera stream
-        const outgoingCallsInProgress = new Set(); // New Set
-        const iceCandidateQueues = new Map();
+            let localStream;
+            let peer;
+            const calls = new Map();
+            const dataConnections = new Map();
+            let incomingCall;
+            let isScreenSharing = false;
+            let cameraStream;
+            const outgoingCallsInProgress = new Set();
+            const iceCandidateQueues = new Map();
 
-        const localMetadata = {
-            name: localStorage.getItem('userName') || 'User' + Math.floor(Math.random() * 1000),
-            avatar_url: localStorage.getItem('userAvatarUrl') || `https://i.pravatar.cc/150?u=${Math.random()}`,
-            custom: { 
-                status: 'Available'
+            const localMetadata = {
+                name: localStorage.getItem('userName') || 'User' + Math.floor(Math.random() * 1000),
+                avatar_url: localStorage.getItem('userAvatarUrl') || `https://i.pravatar.cc/150?u=${Math.random()}`,
+                custom: {
+                    status: 'Available'
+                }
+            };
+
+            // Set initial local metadata display using yokto.js
+            localAvatar.attrs.src = localMetadata.avatar_url;
+            localName.text = localMetadata.name;
+
+            let blockedPeers = new Set(JSON.parse(localStorage.getItem('blockedPeers') || '[]'));
+
+            function generatePeerId() {
+                return String(Math.floor(Math.random() * 900000) + 100000);
             }
-        };
 
-        // Set initial local metadata display
-        localAvatar.src = localMetadata.avatar_url;
-        localName.innerText = localMetadata.name;
-
-        let blockedPeers = new Set(JSON.parse(localStorage.getItem('blockedPeers') || '[]'));
-
-        function generatePeerId () {
-          return String(Math.floor(Math.random() * 900000) + 100000);
-        }
-
-        // Get user media
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then(stream => {
-                localStream = stream;
-                cameraStream = stream; // Store the camera stream
-                localVideo.srcObject = stream;
-                initializePeer();
-            })
-            .catch(error => {
-                console.error('Error accessing media devices.', error);
-            });
-
-        function initializePeer() {
-            let peerId = localStorage.getItem('peerId');
-            if (!peerId) {
-                peerId = generatePeerId();
-                localStorage.setItem('peerId', peerId);
-            }
-            peer = new Peer(peerId, {
-              host: "dev.blackstonenp.com",
-              port: 443,
-              path: "/app",
-              key: "xadkeg",
-              config: {
-                iceServers: [
-                {
-                  url: 'stun:dev.blackstonenp.com:3478'
-                },
-                {
-                  url: 'turn:dev.blackstonenp.com:3478',
-                  username: 'xadkeg',
-                  credential: 'passw0rd'
-                }
-              ]}
-            });
-
-            peer.on('open', id => {
-                myIdSpan.textContent = `Your ID: ${id}`;
-                updatePeerList();
-                setInterval(updatePeerList, 10000);
-                setInterval(checkConnectedPeers, 15000);
-            });
-
-            peer.on('call', call => {
-                console.log(`peer.on('call'): Local peer ID: ${peer.id}, Incoming call peer ID: ${call.peer}`);
-                if (call.peer === peer.id) {
-                    console.log(`peer.on('call'): Ignoring incoming call from self (${call.peer})`);
-                    return;
-                }
-                if (outgoingCallsInProgress.has(call.peer)) {
-                    console.log(`peer.on('call'): Ignoring incoming call from ${call.peer} because an outgoing call is in progress.`);
-                    return;
-                }
-                console.log(`peer.on('call'): Incoming call from ${call.peer}`);
-                                call.answer(localStream);
-                                call.localStream = localStream; // Explicitly set localStream
-                                console.log(`peer.on('call'): Answered call from ${call.peer}`);
-                                console.log(`peer.on('call'): Connection state after answer: ${call.peerConnection.connectionState}`);
-                                console.log(`peer.on('call'): ICE connection state after answer: ${call.peerConnection.iceConnectionState}`);
-                                handleCall(call);            });
-
-            peer.on('connection', conn => {
-                handleDataConnection(conn);
-            });
-
-            peer.on('error', err => {
-                console.error('PeerJS error:', err);
-            });
-        }
-
-        function handleCall(call) {
-            if (!calls.has(call.peer)) {
-                const processQueuedCandidates = async () => {
-                    const queue = iceCandidateQueues.get(call.peer);
-                    if (call.peerConnection.remoteDescription && queue) {
-                        console.log(`handleCall: Processing ${queue.length} queued ICE candidates for ${call.peer}.`);
-                        while (queue.length > 0) {
-                            const candidate = queue.shift();
-                            try {
-                                await call.peerConnection.addIceCandidate(candidate);
-                            } catch (e) {
-                                console.error(`Error adding queued ICE candidate for ${call.peer}:`, e);
-                            }
-                        }
-                    }
-                };
-                processQueuedCandidates();
-                call.peerConnection.addEventListener('signalingstatechange', processQueuedCandidates);
-
-                const videoColumn = document.createElement('div');
-                videoColumn.className = 'column is-half';
-
-                const videoBox = document.createElement('div');
-                videoBox.className = 'box video-container';
-                videoBox.dataset.peerId = call.peer;
-
-                const remoteVideo = document.createElement('video');
-                remoteVideo.style.maxHeight = '100%';
-                remoteVideo.style.maxWidth = '100%';
-                remoteVideo.autoplay = true;
-
-                const statusIcons = document.createElement('div');
-                statusIcons.className = 'status-icons';
-                statusIcons.innerHTML = `
-                    <i class="fas fa-microphone-slash" style="display: none;"></i>
-                    <i class="fas fa-video-slash" style="display: none;"></i>
-                `;
-
-                const info = document.createElement('div');
-                info.className = 'info';
-                const metadata = dataConnections.get(call.peer)?.metadata;
-                if (metadata) {
-                    const avatar = document.createElement('img');
-                    avatar.src = metadata.avatar_url;
-                    const name = document.createElement('span');
-                    name.innerText = metadata.name;
-                    info.appendChild(avatar);
-                    info.appendChild(name);
-                }
-
-                const hangUpBtn = document.createElement('a');
-                hangUpBtn.className = 'button is-danger is-small hang-up-btn';
-                hangUpBtn.innerHTML = '<i class="fas fa-phone-slash"></i>';
-                hangUpBtn.addEventListener('click', () => hangUpPeer(call.peer));
-
-                const blockBtn = document.createElement('a');
-                blockBtn.style.display = 'none';
-                blockBtn.className = 'button is-warning is-small block-btn';
-                blockBtn.innerHTML = '<i class="fas fa-trash"></i>';
-                blockBtn.addEventListener('click', () => blockPeer(call.peer));
-
-                const fullScrBtn = document.createElement('a');
-                fullScrBtn.className = 'button is-info is-small full-scr-btn';
-                fullScrBtn.innerHTML = '<i class="fas fa-expand"></i>';
-                fullScrBtn.addEventListener('click', e => {
-                  target = e.target.previousElementSibling;
-                  if (target.requestFullscreen)
-                    target.requestFullscreen();
-                  else if (div.webkitRequestFullscreen)
-                    target.webkitRequestFullscreen();
-                  else if (div.msRequestFullScreen)
-                    target.msRequestFullScreen();
-                  else
-                    e.target.remove();
+            // Get user media
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(stream => {
+                    localStream = stream;
+                    cameraStream = stream;
+                    localVideo.$.node.srcObject = stream;
+                    initializePeer();
                 })
-
-                videoBox.appendChild(remoteVideo);
-                videoBox.appendChild(fullScrBtn);
-                videoBox.appendChild(statusIcons);
-                videoBox.appendChild(info);
-                videoBox.appendChild(hangUpBtn);
-                videoBox.appendChild(blockBtn);
-                videoColumn.appendChild(videoBox);
-                videosContainer.appendChild(videoColumn);
-
-                // Listen for stream changes directly on the RTCPeerConnection
-                call.peerConnection.ontrack = event => {
-                    console.log(`handleCall: RTCPeerConnection ontrack event for ${call.peer}`, event);
-                    const remoteStream = event.streams[0];
-                    if (remoteStream) {
-                        remoteVideo.srcObject = remoteStream;
-                        call.remoteStream = remoteStream; // Store the remote stream
-                        console.log(`handleCall: remoteVideo.srcObject updated via ontrack for ${call.peer}`);
-                    } else {
-                        console.warn(`handleCall: No stream found in ontrack event for ${call.peer}`);
-                    }
-                };
-
-                // Handle ICE candidates for the initial call setup
-                call.peerConnection.onicecandidate = event => {
-                    if (event.candidate) {
-                        dataConnections.get(call.peer)?.connection.send({
-                            type: 'ice-candidate',
-                            candidate: event.candidate.toJSON()
-                        });
-                        console.log(`handleCall: Sent ICE candidate to peer ${call.peer} during initial setup.`);
-                    }
-                };
-
-                call.on('stream', remoteStream => {
-                    console.log(`handleCall: Stream received for ${call.peer}`);
-                    remoteVideo.srcObject = remoteStream;
-                    call.remoteStream = remoteStream; // Store the remote stream
-                    outgoingCallsInProgress.delete(call.peer); // Remove from blacklist
+                .catch(error => {
+                    console.error('Error accessing media devices.', error);
                 });
 
-                call.on('close', () => {
-                    console.log(`handleCall: Call closed for ${call.peer}`);
-                    videoColumn.remove();
-                    calls.delete(call.peer);
+            function initializePeer() {
+                let peerId = localStorage.getItem('peerId');
+                if (!peerId) {
+                    peerId = generatePeerId();
+                    localStorage.setItem('peerId', peerId);
+                }
+                peer = new Peer(peerId, {
+                  host: "dev.blackstonenp.com",
+                  port: 443,
+                  path: "/app",
+                  key: "xadkeg",
+                  config: {
+                    iceServers: [
+                    {
+                      url: 'stun:dev.blackstonenp.com:3478'
+                    },
+                    {
+                      url: 'turn:dev.blackstonenp.com:3478',
+                      username: 'xadkeg',
+                      credential: 'passw0rd'
+                    }
+                  ]}
                 });
 
-                calls.set(call.peer, call);
+                peer.on('open', id => {
+                    myIdSpan.text = `Your ID: ${id}`;
+                    updatePeerList();
+                    setInterval(updatePeerList, 10000);
+                    setInterval(checkConnectedPeers, 15000);
+                });
+
+                peer.on('call', call => {
+                    console.log(`peer.on('call'): Local peer ID: ${peer.id}, Incoming call peer ID: ${call.peer}`);
+                    if (call.peer === peer.id) {
+                        console.log(`peer.on('call'): Ignoring incoming call from self (${call.peer})`);
+                        return;
+                    }
+                    if (outgoingCallsInProgress.has(call.peer)) {
+                        console.log(`peer.on('call'): Ignoring incoming call from ${call.peer} because an outgoing call is in progress.`);
+                        return;
+                    }
+                    console.log(`peer.on('call'): Incoming call from ${call.peer}`);
+                    call.answer(localStream);
+                    call.localStream = localStream;
+                    console.log(`peer.on('call'): Answered call from ${call.peer}`);
+                    console.log(`peer.on('call'): Connection state after answer: ${call.peerConnection.connectionState}`);
+                    console.log(`peer.on('call'): ICE connection state after answer: ${call.peerConnection.iceConnectionState}`);
+                    handleCall(call);
+                });
+
+                peer.on('connection', conn => {
+                    handleDataConnection(conn);
+                });
+
+                peer.on('error', err => {
+                    console.error('PeerJS error:', err);
+                });
             }
-        }
 
-        function handleDataConnection(conn) {
-            if (blockedPeers.has(conn.peer)) {
-                conn.on('open', () => conn.close());
-                return;
-            }
-
-            conn.on('data', async data => {
-                const dataConn = dataConnections.get(conn.peer);
-
-                switch (data.type) {
-                    case 'call-request': {
-                        showCallNotification(conn, data.metadata, { audioMuted: data.audioMuted, videoMuted: data.videoMuted });
-                        break;
-                    }
-                    case 'call-accepted': {
-                        if (dataConn?.timeoutId) {
-                            clearTimeout(dataConn.timeoutId);
-                        }
-                        handleCallAccepted(conn, data.metadata);
-                        const mediaCall = peer.call(conn.peer, localStream);
-                        outgoingCallsInProgress.add(conn.peer); // Add to outgoing calls in progress
-                        handleCall(mediaCall);
-                        updateMuteStatus(conn.peer, { audioMuted: data.audioMuted, videoMuted: data.videoMuted });
-                        break;
-                    }
-                    case 'call-denied': {
-                        if (dataConn?.timeoutId) {
-                            clearTimeout(dataConn.timeoutId);
-                        }
-                        alert(`${conn.peer} denied your call.`);
-                        conn.close();
-                        break;
-                    }
-                    case 'hang-up': {
-                        const call = calls.get(conn.peer);
-                        if (call) call.close();
-                        conn.close();
-                        break;
-                    }
-                    case 'mute-status': {
-                        updateMuteStatus(conn.peer, data);
-                        break;
-                    }
-                    case 'ice-candidate': {
-                        console.log(`handleDataConnection: Received ICE candidate from ${conn.peer}.`);
-                        const call = calls.get(conn.peer);
-                        const candidate = new RTCIceCandidate(data.candidate);
-
-                        if (call && call.peerConnection && call.peerConnection.remoteDescription) {
-                            try {
-                                await call.peerConnection.addIceCandidate(candidate);
-                            } catch (e) {
-                                console.error(`Error adding ICE candidate for ${conn.peer}:`, e);
+            function handleCall(call) {
+                if (!calls.has(call.peer)) {
+                    const processQueuedCandidates = async () => {
+                        const queue = iceCandidateQueues.get(call.peer);
+                        if (call.peerConnection.remoteDescription && queue) {
+                            console.log(`handleCall: Processing ${queue.length} queued ICE candidates for ${call.peer}.`);
+                            while (queue.length > 0) {
+                                const candidate = queue.shift();
+                                try {
+                                    await call.peerConnection.addIceCandidate(candidate);
+                                } catch (e) {
+                                    console.error(`Error adding queued ICE candidate for ${call.peer}:`, e);
+                                }
                             }
+                        }
+                    };
+                    processQueuedCandidates();
+                    call.peerConnection.addEventListener('signalingstatechange', processQueuedCandidates);
+
+                    // Create video container using yokto.js vNodes
+                    const videoColumn = $v('div', { class: 'column is-half' });
+                    const videoBox = $v('div', {
+                        class: 'box video-container',
+                        'data-peer-id': call.peer
+                    });
+
+                    const remoteVideo = $v('video', {
+                        autoplay: 'true',
+                        style: 'max-height: 100%; max-width: 100%;'
+                    });
+
+                    const statusIcons = $v('div', { class: 'status-icons' }, [
+                        $v('i', { class: 'fas fa-microphone-slash', style: 'display: none;' }),
+                        $v('i', { class: 'fas fa-video-slash', style: 'display: none;' })
+                    ]);
+
+                    const metadata = dataConnections.get(call.peer)?.metadata;
+                    const infoChildren = [];
+                    if (metadata) {
+                        infoChildren.push($v('img', { src: metadata.avatar_url }));
+                        infoChildren.push($v('span', {}, metadata.name));
+                    }
+                    const info = $v('div', { class: 'info' }, infoChildren);
+
+                    const hangUpBtn = $v('a', {
+                        class: 'button is-danger is-small hang-up-btn'
+                    }, $v('i', { class: 'fas fa-phone-slash' }));
+                    hangUpBtn._.on('click', () => hangUpPeer(call.peer));
+
+                    const blockBtn = $v('a', {
+                        class: 'button is-warning is-small block-btn',
+                        style: 'display: none;'
+                    }, $v('i', { class: 'fas fa-trash' }));
+                    blockBtn._.on('click', () => blockPeer(call.peer));
+
+                    const fullScrBtn = $v('a', {
+                        class: 'button is-info is-small full-scr-btn'
+                    }, $v('i', { class: 'fas fa-expand' }));
+                    fullScrBtn._.on('click', e => {
+                        const video = remoteVideo.$.node;
+                        if (video.requestFullscreen)
+                            video.requestFullscreen();
+                        else if (video.webkitRequestFullscreen)
+                            video.webkitRequestFullscreen();
+                        else if (video.msRequestFullScreen)
+                            video.msRequestFullScreen();
+                        else
+                            fullScrBtn._.remove();
+                    });
+
+                    // Assemble the video box using yokto.js mounting
+                    videoBox._.append(remoteVideo);
+                    videoBox._.append(fullScrBtn);
+                    videoBox._.append(statusIcons);
+                    videoBox._.append(info);
+                    videoBox._.append(hangUpBtn);
+                    videoBox._.append(blockBtn);
+                    videoColumn._.append(videoBox);
+                    _(videoColumn, videosContainer);
+
+                    // Listen for stream changes directly on the RTCPeerConnection
+                    call.peerConnection.ontrack = event => {
+                        console.log(`handleCall: RTCPeerConnection ontrack event for ${call.peer}`, event);
+                        const remoteStream = event.streams[0];
+                        if (remoteStream) {
+                            remoteVideo.$.node.srcObject = remoteStream;
+                            call.remoteStream = remoteStream;
+                            console.log(`handleCall: remoteVideo.srcObject updated via ontrack for ${call.peer}`);
                         } else {
-                            if (!iceCandidateQueues.has(conn.peer)) {
-                                iceCandidateQueues.set(conn.peer, []);
-                            }
-                            iceCandidateQueues.get(conn.peer).push(candidate);
-                            console.log(`Queued ICE candidate from ${conn.peer}.`);
+                            console.warn(`handleCall: No stream found in ontrack event for ${call.peer}`);
                         }
-                        break;
-                    }
-                }
-            });
+                    };
 
-            conn.on('close', () => {
-                if (incomingCall && incomingCall.conn.peer === conn.peer) {
-                    callNotification.style.display = 'none';
-                    incomingCall = null;
-                }
-                dataConnections.delete(conn.peer);
-                const call = calls.get(conn.peer);
-                if (call) call.close();
-            });
-        }
+                    // Handle ICE candidates for the initial call setup
+                    call.peerConnection.onicecandidate = event => {
+                        if (event.candidate) {
+                            dataConnections.get(call.peer)?.connection.send({
+                                type: 'ice-candidate',
+                                candidate: event.candidate.toJSON()
+                            });
+                            console.log(`handleCall: Sent ICE candidate to peer ${call.peer} during initial setup.`);
+                        }
+                    };
 
-        function showCallNotification(conn, metadata, muteStatus) {
-            incomingCall = { conn, metadata, muteStatus };
-            callNotificationText.innerText = `Incoming call from ${metadata.name}`;
-            callNotification.style.display = 'block';
-        }
+                    call.on('stream', remoteStream => {
+                        console.log(`handleCall: Stream received for ${call.peer}`);
+                        remoteVideo.$.node.srcObject = remoteStream;
+                        call.remoteStream = remoteStream;
+                        outgoingCallsInProgress.delete(call.peer);
+                    });
 
-        function handleCallAccepted(conn, metadata) {
-            dataConnections.set(conn.peer, { connection: conn, metadata });
-        }
+                    call.on('close', () => {
+                        console.log(`handleCall: Call closed for ${call.peer}`);
+                        videoColumn._.remove();
+                        calls.delete(call.peer);
+                    });
 
-        function updateMuteStatus(peerId, data) {
-            const videoContainer = document.querySelector(`.video-container[data-peer-id="${peerId}"]`);
-            if (videoContainer) {
-                const audioIcon = videoContainer.querySelector('.fa-microphone-slash');
-                const videoIcon = videoContainer.querySelector('.fa-video-slash');
-                audioIcon.style.display = data.audioMuted ? 'inline-block' : 'none';
-                videoIcon.style.display = data.videoMuted ? 'inline-block' : 'none';
-
-                // Explicitly re-assign srcObject to force a re-render
-                const remoteVideo = videoContainer.querySelector('video');
-                const call = calls.get(peerId);
-                if (remoteVideo && call && call.remoteStream) {
-                    remoteVideo.srcObject = call.remoteStream;
-                }
-            }
-        }
-
-        function blockPeer(peerId) {
-            blockedPeers.add(peerId);
-            localStorage.setItem('blockedPeers', JSON.stringify([...blockedPeers]));
-            const call = calls.get(peerId);
-            if (call) call.close();
-            const conn = dataConnections.get(peerId);
-            if (conn) conn.connection.close();
-            updatePeerList();
-        }
-
-        function hangUpPeer(peerId) {
-            const call = calls.get(peerId);
-            if (call) {
-                call.close();
-            }
-            const conn = dataConnections.get(peerId);
-            if (conn && conn.connection) {
-                conn.connection.send({ type: 'hang-up' });
-                conn.connection.close();
-            }
-        }
-
-        async function replaceLocalVideoStream(newVideoTrack) {
-            console.log('replaceLocalVideoStream: Replacing video track.');
-
-            // Find the video sender for each peer connection and replace the track
-            for (const call of calls.values()) {
-                const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-                if (sender) {
-                    await sender.replaceTrack(newVideoTrack);
-                    console.log(`replaceLocalVideoStream: Replaced track for peer ${call.peer}.`);
-                } else {
-                    console.warn(`replaceLocalVideoStream: Could not find video sender for peer ${call.peer}.`);
+                    calls.set(call.peer, call);
                 }
             }
 
-            // Stop the old local video track
-            const oldVideoTrack = localStream.getVideoTracks()[0];
-            if (oldVideoTrack) {
-                oldVideoTrack.stop();
-            }
+            function handleDataConnection(conn) {
+                if (blockedPeers.has(conn.peer)) {
+                    conn.on('open', () => conn.close());
+                    return;
+                }
 
-            // Update the local stream with the new track, keeping the existing audio track
-            const audioTrack = localStream.getAudioTracks()[0];
-            localStream = new MediaStream([audioTrack, newVideoTrack]);
+                conn.on('data', async data => {
+                    const dataConn = dataConnections.get(conn.peer);
 
-            // Update the local video element to show the new stream
-            localVideo.srcObject = localStream;
-        }
+                    switch (data.type) {
+                        case 'call-request': {
+                            showCallNotification(conn, data.metadata, { audioMuted: data.audioMuted, videoMuted: data.videoMuted });
+                            break;
+                        }
+                        case 'call-accepted': {
+                            if (dataConn?.timeoutId) {
+                                clearTimeout(dataConn.timeoutId);
+                            }
+                            handleCallAccepted(conn, data.metadata);
+                            const mediaCall = peer.call(conn.peer, localStream);
+                            outgoingCallsInProgress.add(conn.peer);
+                            handleCall(mediaCall);
+                            updateMuteStatus(conn.peer, { audioMuted: data.audioMuted, videoMuted: data.videoMuted });
+                            break;
+                        }
+                        case 'call-denied': {
+                            if (dataConn?.timeoutId) {
+                                clearTimeout(dataConn.timeoutId);
+                            }
+                            alert(`${conn.peer} denied your call.`);
+                            conn.close();
+                            break;
+                        }
+                        case 'hang-up': {
+                            const call = calls.get(conn.peer);
+                            if (call) call.close();
+                            conn.close();
+                            break;
+                        }
+                        case 'mute-status': {
+                            updateMuteStatus(conn.peer, data);
+                            break;
+                        }
+                        case 'ice-candidate': {
+                            console.log(`handleDataConnection: Received ICE candidate from ${conn.peer}.`);
+                            const call = calls.get(conn.peer);
+                            const candidate = new RTCIceCandidate(data.candidate);
 
-        function updatePeerList() {
-            peer.listAllPeers(peers => {
-                peerList.innerHTML = '';
-                peers.forEach(p => {
-                    if (p !== peer.id && !blockedPeers.has(p)) {
-                        const a = document.createElement('a');
-                        a.className = 'panel-block';
-                        a.innerText = p;
-                        a.addEventListener('click', () => {
-                            peerIdInput.value = p;
-                            connectBtn.click();
-                        });
-                        peerList.appendChild(a);
+                            if (call && call.peerConnection && call.peerConnection.remoteDescription) {
+                                try {
+                                    await call.peerConnection.addIceCandidate(candidate);
+                                } catch (e) {
+                                    console.error(`Error adding ICE candidate for ${conn.peer}:`, e);
+                                }
+                            } else {
+                                if (!iceCandidateQueues.has(conn.peer)) {
+                                    iceCandidateQueues.set(conn.peer, []);
+                                }
+                                iceCandidateQueues.get(conn.peer).push(candidate);
+                                console.log(`Queued ICE candidate from ${conn.peer}.`);
+                            }
+                            break;
+                        }
                     }
                 });
-            });
-        }
 
-        function checkConnectedPeers() {
-            peer.listAllPeers(peers => {
-                for (const [peerId, call] of calls.entries()) {
-                    if (!peers.includes(peerId)) {
-                        call.close();
+                conn.on('close', () => {
+                    if (incomingCall && incomingCall.conn.peer === conn.peer) {
+                        callNotification._.css({ display: 'none' });
+                        incomingCall = null;
+                    }
+                    dataConnections.delete(conn.peer);
+                    const call = calls.get(conn.peer);
+                    if (call) call.close();
+                });
+            }
+
+            function showCallNotification(conn, metadata, muteStatus) {
+                incomingCall = { conn, metadata, muteStatus };
+                callNotificationText.text = `Incoming call from ${metadata.name}`;
+                callNotification._.css({ display: 'block' });
+            }
+
+            function handleCallAccepted(conn, metadata) {
+                dataConnections.set(conn.peer, { connection: conn, metadata });
+            }
+
+            function updateMuteStatus(peerId, data) {
+                const videoContainer = $(`.video-container[data-peer-id="${peerId}"]`);
+                if (videoContainer) {
+                    const icons = videoContainer.children;
+                    let audioIcon, videoIcon;
+
+                    icons.each(child => {
+                        if (child.tag === 'div' && child.attrs.class === 'status-icons') {
+                            const statusChildren = child.children;
+                            statusChildren.each(icon => {
+                                if (icon.attrs && icon.attrs.class && icon.attrs.class.includes('fa-microphone-slash')) {
+                                    audioIcon = icon;
+                                }
+                                if (icon.attrs && icon.attrs.class && icon.attrs.class.includes('fa-video-slash')) {
+                                    videoIcon = icon;
+                                }
+                            });
+                        }
+                    });
+
+                    if (audioIcon) audioIcon._.css({ display: data.audioMuted ? 'inline-block' : 'none' });
+                    if (videoIcon) videoIcon._.css({ display: data.videoMuted ? 'inline-block' : 'none' });
+
+                    // Explicitly re-assign srcObject to force a re-render
+                    const remoteVideo = videoContainer.$.node.querySelector('video');
+                    const call = calls.get(peerId);
+                    if (remoteVideo && call && call.remoteStream) {
+                        remoteVideo.srcObject = call.remoteStream;
                     }
                 }
-            });
-        }
+            }
 
-        function handleConnect() {
-            const peerId = peerIdInput.value.trim();
-            if (peerId && peerId !== peer.id && !calls.has(peerId)) {
-                const conn = peer.connect(peerId);
-                const timeoutId = setTimeout(() => {
-                    alert(`No answer from ${peerId}`);
-                    conn.close();
-                }, 30000);
+            function blockPeer(peerId) {
+                blockedPeers.add(peerId);
+                localStorage.setItem('blockedPeers', JSON.stringify([...blockedPeers]));
+                const call = calls.get(peerId);
+                if (call) call.close();
+                const conn = dataConnections.get(peerId);
+                if (conn) conn.connection.close();
+                updatePeerList();
+            }
 
-                conn.on('open', () => {
-                    dataConnections.set(peerId, { connection: conn, timeoutId });
-                    conn.send({ 
-                        type: 'call-request', 
+            function hangUpPeer(peerId) {
+                const call = calls.get(peerId);
+                if (call) {
+                    call.close();
+                }
+                const conn = dataConnections.get(peerId);
+                if (conn && conn.connection) {
+                    conn.connection.send({ type: 'hang-up' });
+                    conn.connection.close();
+                }
+            }
+
+            async function replaceLocalVideoStream(newVideoTrack) {
+                console.log('replaceLocalVideoStream: Replacing video track.');
+
+                for (const call of calls.values()) {
+                    const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+                    if (sender) {
+                        await sender.replaceTrack(newVideoTrack);
+                        console.log(`replaceLocalVideoStream: Replaced track for peer ${call.peer}.`);
+                    } else {
+                        console.warn(`replaceLocalVideoStream: Could not find video sender for peer ${call.peer}.`);
+                    }
+                }
+
+                const oldVideoTrack = localStream.getVideoTracks()[0];
+                if (oldVideoTrack) {
+                    oldVideoTrack.stop();
+                }
+
+                const audioTrack = localStream.getAudioTracks()[0];
+                localStream = new MediaStream([audioTrack, newVideoTrack]);
+
+                localVideo.$.node.srcObject = localStream;
+            }
+
+            function updatePeerList() {
+                peer.listAllPeers(peers => {
+                    peerList.text = '';
+                    peers.forEach(p => {
+                        if (p !== peer.id && !blockedPeers.has(p)) {
+                            const peerItem = $v('a', { class: 'panel-block' }, p);
+                            peerItem._.on('click', () => {
+                                peerIdInput.$.node.value = p;
+                                connectBtn.$.node.click();
+                            });
+                            _(peerItem, peerList);
+                        }
+                    });
+                });
+            }
+
+            function checkConnectedPeers() {
+                peer.listAllPeers(peers => {
+                    for (const [peerId, call] of calls.entries()) {
+                        if (!peers.includes(peerId)) {
+                            call.close();
+                        }
+                    }
+                });
+            }
+
+            function handleConnect() {
+                const peerId = peerIdInput.$.node.value.trim();
+                if (peerId && peerId !== peer.id && !calls.has(peerId)) {
+                    const conn = peer.connect(peerId);
+                    const timeoutId = setTimeout(() => {
+                        alert(`No answer from ${peerId}`);
+                        conn.close();
+                    }, 30000);
+
+                    conn.on('open', () => {
+                        dataConnections.set(peerId, { connection: conn, timeoutId });
+                        conn.send({
+                            type: 'call-request',
+                            metadata: localMetadata,
+                            audioMuted: !localStream.getAudioTracks()[0].enabled,
+                            videoMuted: !localStream.getVideoTracks()[0].enabled
+                        });
+                    });
+                    handleDataConnection(conn);
+                }
+                peerIdInput.$.node.value = '';
+            }
+
+            acceptCallBtn._.on('click', () => {
+                if (incomingCall) {
+                    incomingCall.conn.send({
+                        type: 'call-accepted',
                         metadata: localMetadata,
                         audioMuted: !localStream.getAudioTracks()[0].enabled,
                         videoMuted: !localStream.getVideoTracks()[0].enabled
                     });
-                });
-                handleDataConnection(conn);
-            }
-            peerIdInput.value = '';
-        }
+                    dataConnections.set(incomingCall.conn.peer, { connection: incomingCall.conn, metadata: incomingCall.metadata });
 
-        acceptCallBtn.addEventListener('click', () => {
-            if (incomingCall) {
-                incomingCall.conn.send({ 
-                    type: 'call-accepted', 
-                    metadata: localMetadata,
-                    audioMuted: !localStream.getAudioTracks()[0].enabled,
-                    videoMuted: !localStream.getVideoTracks()[0].enabled
-                });
-                dataConnections.set(incomingCall.conn.peer, { connection: incomingCall.conn, metadata: incomingCall.metadata });
-                
-                // The caller will initiate the media connection. We just wait for it in peer.on('call').
-                updateMuteStatus(incomingCall.conn.peer, incomingCall.muteStatus);
+                    updateMuteStatus(incomingCall.conn.peer, incomingCall.muteStatus);
 
-                callNotification.style.display = 'none';
-                incomingCall = null;
-            }
-        });
-
-        denyCallBtn.addEventListener('click', () => {
-            if (incomingCall) {
-                incomingCall.conn.send({ type: 'call-denied' });
-                incomingCall.conn.close();
-                callNotification.style.display = 'none';
-                incomingCall = null;
-            }
-        });
-
-        peerIdInput.addEventListener('keyup', event => {
-            if (event.key === 'Enter') handleConnect();
-        });
-
-        connectBtn.addEventListener('click', handleConnect);
-
-        hangUpBtn.addEventListener('click', () => {
-            for (const [peerId, dataConn] of dataConnections.entries()) {
-                if(dataConn.connection) {
-                    dataConn.connection.send({ type: 'hang-up' });
+                    callNotification._.css({ display: 'none' });
+                    incomingCall = null;
                 }
-            }
-        });
+            });
 
-        muteAudioBtn.addEventListener('click', () => {
-            const audioTrack = localStream.getAudioTracks()[0];
-            audioTrack.enabled = !audioTrack.enabled;
-            // muteAudioBtn.innerText = audioTrack.enabled ? 'Mute Audio' : 'Unmute Audio';
-            muteAudioBtn.innerHTML = audioTrack.enabled ? '<i class="fas fa-microphone"></i>' : '<i class="fas fa-microphone-slash"></i>';
-            localAudioMuteIcon.style.display = audioTrack.enabled ? 'none' : 'inline-block';
-            for (const [peerId, dataConn] of dataConnections.entries()) {
-                if(dataConn.connection) {
-                    dataConn.connection.send({ type: 'mute-status', audioMuted: !audioTrack.enabled, videoMuted: !localStream.getVideoTracks()[0].enabled });
+            denyCallBtn._.on('click', () => {
+                if (incomingCall) {
+                    incomingCall.conn.send({ type: 'call-denied' });
+                    incomingCall.conn.close();
+                    callNotification._.css({ display: 'none' });
+                    incomingCall = null;
                 }
-            }
-        });
+            });
 
-        muteVideoBtn.addEventListener('click', () => {
-            const videoTrack = localStream.getVideoTracks()[0];
-            videoTrack.enabled = !videoTrack.enabled;
-            // muteVideoBtn.innerText = videoTrack.enabled ? 'Mute Video' : 'Unmute Video';
-            muteVideoBtn.innerHTML = videoTrack.enabled ? '<i class="fas fa-video"></i>' : '<i class="fas fa-video-slash"></i>';
-            localVideoMuteIcon.style.display = videoTrack.enabled ? 'none' : 'inline-block';
-            for (const [peerId, dataConn] of dataConnections.entries()) {
-                if(dataConn.connection) {
-                    dataConn.connection.send({ type: 'mute-status', audioMuted: !localStream.getAudioTracks()[0].enabled, videoMuted: !videoTrack.enabled });
+            peerIdInput._.on('keyup', event => {
+                if (event.key === 'Enter') handleConnect();
+            });
+
+            connectBtn._.on('click', handleConnect);
+
+            hangUpBtn._.on('click', () => {
+                for (const [peerId, dataConn] of dataConnections.entries()) {
+                    if(dataConn.connection) {
+                        dataConn.connection.send({ type: 'hang-up' });
+                    }
                 }
-            }
-        });
+            });
 
-        shareScreenBtn.addEventListener('click', async () => {
-            if (isScreenSharing) {
-                // Stop screen sharing
-                const newCameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                const newCameraVideoTrack = newCameraStream.getVideoTracks()[0];
-                await replaceLocalVideoStream(newCameraVideoTrack);
-                isScreenSharing = false;
-                shareScreenBtn.innerHTML = '<i class="fas fa-desktop"></i>';
-            } else {
-                // Start screen sharing
-                try {
-                    const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-                    const screenVideoTrack = screenStream.getVideoTracks()[0];
-                    await replaceLocalVideoStream(screenVideoTrack);
-                    isScreenSharing = true;
-                    shareScreenBtn.innerHTML = '<i class="fas fa-stop-circle"></i>';
-
-                    // Listen for screen share end event
-                    screenVideoTrack.onended = () => {
-                        if (isScreenSharing) {
-                            shareScreenBtn.click(); // Simulate click to stop sharing
-                        }
-                    };
-
-                } catch (error) {
-                    console.error('Error sharing screen:', error);
+            muteAudioBtn._.on('click', () => {
+                const audioTrack = localStream.getAudioTracks()[0];
+                audioTrack.enabled = !audioTrack.enabled;
+                const icon = audioTrack.enabled ? '<i class="fas fa-microphone"></i>' : '<i class="fas fa-microphone-slash"></i>';
+                muteAudioBtn.$.node.innerHTML = icon;
+                localAudioMuteIcon._.css({ display: audioTrack.enabled ? 'none' : 'inline-block' });
+                for (const [peerId, dataConn] of dataConnections.entries()) {
+                    if(dataConn.connection) {
+                        dataConn.connection.send({ type: 'mute-status', audioMuted: !audioTrack.enabled, videoMuted: !localStream.getVideoTracks()[0].enabled });
+                    }
                 }
-            }
-        });
+            });
 
-        resetIdBtn.addEventListener('click', () => {
-            peer.destroy();
-            let peerId = generatePeerId();
-            localStorage.setItem('peerId', peerId);
-            initializePeer();
-        });
+            muteVideoBtn._.on('click', () => {
+                const videoTrack = localStream.getVideoTracks()[0];
+                videoTrack.enabled = !videoTrack.enabled;
+                const icon = videoTrack.enabled ? '<i class="fas fa-video"></i>' : '<i class="fas fa-video-slash"></i>';
+                muteVideoBtn.$.node.innerHTML = icon;
+                localVideoMuteIcon._.css({ display: videoTrack.enabled ? 'none' : 'inline-block' });
+                for (const [peerId, dataConn] of dataConnections.entries()) {
+                    if(dataConn.connection) {
+                        dataConn.connection.send({ type: 'mute-status', audioMuted: !localStream.getAudioTracks()[0].enabled, videoMuted: !videoTrack.enabled });
+                    }
+                }
+            });
 
-        updateProfileBtn.addEventListener('click', () => {
-            profileModal.classList.add('is-active');
-            nameInput.value = localMetadata.name;
-        });
+            shareScreenBtn._.on('click', async () => {
+                if (isScreenSharing) {
+                    const newCameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    const newCameraVideoTrack = newCameraStream.getVideoTracks()[0];
+                    await replaceLocalVideoStream(newCameraVideoTrack);
+                    isScreenSharing = false;
+                    shareScreenBtn.$.node.innerHTML = '<i class="fas fa-desktop"></i>';
+                } else {
+                    try {
+                        const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                        const screenVideoTrack = screenStream.getVideoTracks()[0];
+                        await replaceLocalVideoStream(screenVideoTrack);
+                        isScreenSharing = true;
+                        shareScreenBtn.$.node.innerHTML = '<i class="fas fa-stop-circle"></i>';
 
-        profileModal.querySelector('.modal-background').addEventListener('click', () => {
-            profileModal.classList.remove('is-active');
-        });
+                        screenVideoTrack.onended = () => {
+                            if (isScreenSharing) {
+                                shareScreenBtn.$.node.click();
+                            }
+                        };
 
-        profileModal.querySelector('.delete').addEventListener('click', () => {
-            profileModal.classList.remove('is-active');
-        });
+                    } catch (error) {
+                        console.error('Error sharing screen:', error);
+                    }
+                }
+            });
 
-        profileModal.querySelector('.button:not(.is-success)').addEventListener('click', () => {
-            profileModal.classList.remove('is-active');
-        });
+            resetIdBtn._.on('click', () => {
+                peer.destroy();
+                let peerId = generatePeerId();
+                localStorage.setItem('peerId', peerId);
+                initializePeer();
+            });
 
-        saveProfileBtn.addEventListener('click', () => {
-            const newName = nameInput.value.trim();
-            if (newName) {
-                localMetadata.name = newName;
-                localStorage.setItem('userName', newName);
-                // Generate a new avatar URL when the name is updated
-                localMetadata.avatar_url = `https://i.pravatar.cc/150?u=${Math.random()}`;
-                localStorage.setItem('userAvatarUrl', localMetadata.avatar_url);
-                localAvatar.src = localMetadata.avatar_url;
-                localName.innerText = localMetadata.name;
-                profileModal.classList.remove('is-active');
-            }
-        });  // TODO: Port this utilizing yokto.js!
+            updateProfileBtn._.on('click', () => {
+                profileModal._.addClasses('is-active');
+                nameInput.$.node.value = localMetadata.name;
+            });
+
+            const modalBg = profileModal.$.node.querySelector('.modal-background');
+            const modalDelete = profileModal.$.node.querySelector('.delete');
+            const modalCancel = profileModal.$.node.querySelector('.button:not(.is-success)');
+
+            modalBg.addEventListener('click', () => {
+                profileModal._.removeClasses('is-active');
+            });
+
+            modalDelete.addEventListener('click', () => {
+                profileModal._.removeClasses('is-active');
+            });
+
+            modalCancel.addEventListener('click', () => {
+                profileModal._.removeClasses('is-active');
+            });
+
+            saveProfileBtn._.on('click', () => {
+                const newName = nameInput.$.node.value.trim();
+                if (newName) {
+                    localMetadata.name = newName;
+                    localStorage.setItem('userName', newName);
+                    localMetadata.avatar_url = `https://i.pravatar.cc/150?u=${Math.random()}`;
+                    localStorage.setItem('userAvatarUrl', localMetadata.avatar_url);
+                    localAvatar.attrs.src = localMetadata.avatar_url;
+                    localName.text = localMetadata.name;
+                    profileModal._.removeClasses('is-active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
