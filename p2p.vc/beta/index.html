@@ -18,12 +18,14 @@
     <meta name="twitter:image" content="https://opengraph.b-cdn.net/production/images/615a02c6-2923-48d9-b1ec-50c6e27c5d06.png?token=JmMVYG07SFugbkLOXnU2VTn_7tFDja2Sx-LdZtIxFAY&height=800&width=1200&expires=33295584976">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativebulma/bulma-tooltip@1.2.0/dist/bulma-tooltip.min.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativebulma/bulma-tooltip@1.2.0/dist/bulma-tooltip.min.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <title>P2P Group Calling</title>
     <style>
         .video-container {
             position: relative;
+            padding: 0rem;
+            box-shadow: none;
         }
         .status-icons {
             position: absolute;
@@ -142,8 +144,8 @@
                 <div class="column">
                     <div id="videos" class="columns is-multiline">
                         <div class="column is-half">
-                            <div class="box video-container" id="local-video-container" style="background: #ededed;">
-                                <video id="local-video" autoplay muted></video>
+                            <div class="box video-container" id="local-video-container">
+                                <video id="local-video" style="border-radius: 6px" autoplay muted></video>
                                 <div class="status-icons">
                                     <i class="fas fa-microphone-slash" id="local-audio-mute-icon" style="display: none;"></i>
                                     <i class="fas fa-video-slash" id="local-video-mute-icon" style="display: none;"></i>
@@ -348,7 +350,7 @@
 
                     const remoteVideo = $v('video', {
                         autoplay: 'true',
-                        style: 'max-height: 100%; max-width: 100%;'
+                        style: 'max-height: 100%; max-width: 100%; border-radius: 6px;'
                     });
 
                     const statusIcons = $v('div', { class: 'status-icons' }, [
