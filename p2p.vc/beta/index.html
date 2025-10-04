@@ -145,7 +145,7 @@
                     <div id="videos" class="columns is-multiline">
                         <div class="column is-half">
                             <div class="box video-container" id="local-video-container">
-                                <video id="local-video" style="border-radius: 6px" autoplay muted></video>
+                                <video id="local-video" style="border-radius: 6px;pointer-events: none;" autoplay muted></video>
                                 <div class="status-icons">
                                     <i class="fas fa-microphone-slash" id="local-audio-mute-icon" style="display: none;"></i>
                                     <i class="fas fa-video-slash" id="local-video-mute-icon" style="display: none;"></i>
@@ -344,14 +344,16 @@
                     const videoColumn = $v('div', { class: 'column is-half' });
                     const videoBox = $v('div', {
                         class: 'box video-container',
-                        'data-peer-id': call.peer,
-                        style: 'background-color: #00d1b2'
+                        'data-peer-id': call.peer
                     });
 
                     const remoteVideo = $v('video', {
                         autoplay: 'true',
-                        style: 'max-height: 100%; max-width: 100%; border-radius: 6px;'
+                        style: 'max-height: 100%; max-width: 100%; border-radius: 6px; pointer-events: none;'
                     });
+                    remoteVideo._.on('pause', e => {
+                      e.preventDefault();
+                    })
 
                     const statusIcons = $v('div', { class: 'status-icons' }, [
                         $v('i', { class: 'fas fa-microphone-slash', style: 'display: none;' }),
@@ -377,19 +379,26 @@
                     }, $v('i', { class: 'fas fa-trash' }));
                     blockBtn._.on('click', () => blockPeer(call.peer));
 
+                    const toFullScr = () => {
+                      const video = remoteVideo.$.node;
+                      if (video.requestFullscreen)
+                        video.requestFullscreen();
+                      else if (video.webkitRequestFullscreen)
+                        video.webkitRequestFullscreen();
+                      else if (video.msRequestFullScreen)
+                        video.msRequestFullScreen();
+                      else
+                        fullScrBtn._.remove();
+                    }
+                    const fullScrIco = $v('i', {class: 'fas fa-expand'});
+                    fullScrIco._.on('click', ()=>{
+                      toFullScr();
+                    })
                     const fullScrBtn = $v('a', {
                         class: 'button is-info is-small full-scr-btn'
-                    }, $v('i', { class: 'fas fa-expand' }));
-                    fullScrBtn._.on('click', e => {
-                        const video = remoteVideo.$.node;
-                        if (video.requestFullscreen)
-                            video.requestFullscreen();
-                        else if (video.webkitRequestFullscreen)
-                            video.webkitRequestFullscreen();
-                        else if (video.msRequestFullScreen)
-                            video.msRequestFullScreen();
-                        else
-                            fullScrBtn._.remove();
+                    }, fullScrIco);
+                    fullScrBtn._.on('click', () => {
+                      toFullScr();
                     });
 
                     // Assemble the video box using yokto.js mounting
