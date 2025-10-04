@@ -2,11 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="description" content="P2P Group Calling">
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://osho.is-a.dev/p2p.vc/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="P2P Group Calling">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="https://opengraph.b-cdn.net/production/images/615a02c6-2923-48d9-b1ec-50c6e27c5d06.png?token=JmMVYG07SFugbkLOXnU2VTn_7tFDja2Sx-LdZtIxFAY&height=800&width=1200&expires=33295584976">
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="osho.is-a.dev">
+    <meta property="twitter:url" content="https://osho.is-a.dev/p2p.vc/">
+    <meta name="twitter:title" content="P2P Group Calling">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:image" content="https://opengraph.b-cdn.net/production/images/615a02c6-2923-48d9-b1ec-50c6e27c5d06.png?token=JmMVYG07SFugbkLOXnU2VTn_7tFDja2Sx-LdZtIxFAY&height=800&width=1200&expires=33295584976">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativebulma/bulma-tooltip@1.2.0/dist/bulma-tooltip.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <title>P2P Group Calling (Yokto.js)</title>
+    <title>P2P Group Calling</title>
     <style>
         .video-container {
             position: relative;
@@ -78,13 +92,13 @@
 <body>
     <section class="hero is-primary">
         <div class="hero-body">
-            <p class="title">
-                P2P Group Calling (Yokto.js Edition)
+            <p class="title" style="background-color: #000">
+                P2P Group Calling (PeerJS)
             </p>
             <p class="subtitle" id="my-id">
                 Your ID:
             </p>
-            <p class="subtitle" style="text-align: right;color: #000;">Powered by Yokto.js</p>
+            <p class="subtitle" style="text-align: right;color: #000;">Powered by yokto.js</p>
         </div>
     </section>
 
@@ -105,8 +119,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="box">
-                        <p class="menu-label">
+                    <div class="box" tyle="background-color: #00d1b2">
+                        <p class="menu-label" style="color: #000">
                             Controls
                         </p>
                         <div class="buttons">
@@ -118,7 +132,7 @@
                             <button class="button is-info" id="update-profile-btn"><i class="fas fa-gear"></i></button>
                         </div>
                     </div>
-                    <nav class="panel">
+                    <nav class="panel" style="background-color: #00d1b2">
                         <p class="panel-heading">
                             Available Peers
                         </p>
@@ -128,7 +142,7 @@
                 <div class="column">
                     <div id="videos" class="columns is-multiline">
                         <div class="column is-half">
-                            <div class="box video-container" id="local-video-container" style="background: #000;">
+                            <div class="box video-container" id="local-video-container" style="background: #ededed;">
                                 <video id="local-video" autoplay muted></video>
                                 <div class="status-icons">
                                     <i class="fas fa-microphone-slash" id="local-audio-mute-icon" style="display: none;"></i>
@@ -328,7 +342,8 @@
                     const videoColumn = $v('div', { class: 'column is-half' });
                     const videoBox = $v('div', {
                         class: 'box video-container',
-                        'data-peer-id': call.peer
+                        'data-peer-id': call.peer,
+                        style: 'background-color: #00d1b2'
                     });
 
                     const remoteVideo = $v('video', {
