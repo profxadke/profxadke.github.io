@@ -208,6 +208,14 @@
                                 >
                                     <i class="fas fa-gear"></i>
                                 </button>
+                                <button
+                                    aria-label="Manage blocked peers button"
+                                    class="btn btn-warning btn-sm"
+                                    id="manage-blocked-btn"
+                                    disabled
+                                >
+                                    <i class="fas fa-user-slash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -353,6 +361,41 @@
             </form>
         </dialog>
 
+        <!-- Blocked Peers Modal -->
+        <dialog id="blocked-peers-modal" class="modal">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fas fa-user-slash"></i>
+                    Blocked Peers
+                </h3>
+                <div class="py-4">
+                    <div id="blocked-peers-list" class="space-y-2">
+                        <!-- Blocked peers will be populated here -->
+                    </div>
+                    <div
+                        id="no-blocked-peers"
+                        class="text-center py-8 text-base-content/60"
+                        style="display: none"
+                    >
+                        <i class="fas fa-check-circle text-4xl mb-2"></i>
+                        <p>No blocked peers</p>
+                    </div>
+                </div>
+                <div class="modal-action">
+                    <button
+                        aria-label="Close button"
+                        class="btn"
+                        id="close-blocked-modal-btn"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+            <form method="dialog" class="modal-backdrop">
+                <button>close</button>
+            </form>
+        </dialog>
+
         <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/profxadke/yokto.js@main/yokto.min.js"></script>
         <script>
@@ -381,6 +424,11 @@
                 const profileModal = $("#profile-modal"); // Profile settings modal
                 const nameInput = $("#name-input"); // Input for user's display name
                 const saveProfileBtn = $("#save-profile-btn"); // Save profile changes
+                const manageBlockedBtn = $("#manage-blocked-btn"); // Button to open blocked peers modal
+                const blockedPeersModal = $("#blocked-peers-modal"); // Blocked peers modal
+                const blockedPeersList = $("#blocked-peers-list"); // Container for blocked peers list
+                const noBlockedPeers = $("#no-blocked-peers"); // Message when no peers are blocked
+                const closeBlockedModalBtn = $("#close-blocked-modal-btn"); // Close blocked modal button
                 const localVideoContainer = $("#local-video-container"); // Container for local video
                 const localAudioMuteIcon = $("#local-audio-mute-icon"); // Icon showing local audio is muted
                 const localVideoMuteIcon = $("#local-video-mute-icon"); // Icon showing local video is muted
@@ -400,6 +448,7 @@
                 let cameraStream; // Cached camera MediaStream for switching back from screen share
                 const outgoingCallsInProgress = new Set(); // Set<peerId> - prevents accepting incoming call from peer we're calling
                 const iceCandidateQueues = new Map(); // Map<peerId, Array<RTCIceCandidate>> - queues ICE candidates received before remote description is set
+                const callTimers = new Map(); // Map<peerId, {startTime, intervalId}> - tracks call duration timers
 
                 // ============================================================
                 // USER METADATA
@@ -439,6 +488,79 @@
                  */
                 function generatePeerId() {
                     return String(Math.floor(Math.random() * 9e5) + 1e5);
+                }
+
+                /**
+                 * Formats elapsed time in seconds to HH:MM:SS or MM:SS
+                 * @param {number} seconds - Total seconds elapsed
+                 * @returns {string} Formatted time string
+                 */
+                function formatCallDuration(seconds) {
+                    const hours = Math.floor(seconds / 3600);
+                    const minutes = Math.floor((seconds % 3600) / 60);
+                    const secs = seconds % 60;
+
+                    if (hours > 0) {
+                        return `${hours}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+                    }
+                    return `${minutes}:${String(secs).padStart(2, "0")}`;
+                }
+
+                /**
+                 * Starts a call timer for a peer
+                 * Updates the timer display every second
+                 * @param {string} peerId - Peer ID to start timer for
+                 */
+                function startCallTimer(peerId) {
+                    // Stop any existing timer for this peer first
+                    stopCallTimer(peerId);
+
+                    const startTime = Date.now();
+
+                    const updateTimer = () => {
+                        const elapsed = Math.floor(
+                            (Date.now() - startTime) / 1000,
+                        );
+                        const timerElement = document.querySelector(
+                            `.video-container[data-peer-id="${peerId}"] .call-timer`,
+                        );
+                        if (timerElement) {
+                            timerElement.textContent =
+                                formatCallDuration(elapsed);
+                            console.log(
+                                `Updated timer for ${peerId}: ${formatCallDuration(elapsed)}`,
+                            );
+                        } else {
+                            console.warn(
+                                `Timer element not found for ${peerId}`,
+                            );
+                        }
+                    };
+
+                    // Update immediately
+                    updateTimer();
+
+                    // Update every second
+                    const intervalId = setInterval(updateTimer, 1000);
+
+                    callTimers.set(peerId, { startTime, intervalId });
+                    console.log(`Started call timer for ${peerId}`, {
+                        startTime,
+                        intervalId,
+                    });
+                }
+
+                /**
+                 * Stops and clears the call timer for a peer
+                 * @param {string} peerId - Peer ID to stop timer for
+                 */
+                function stopCallTimer(peerId) {
+                    const timer = callTimers.get(peerId);
+                    if (timer) {
+                        clearInterval(timer.intervalId);
+                        callTimers.delete(peerId);
+                        console.log(`Stopped call timer for ${peerId}`);
+                    }
                 }
 
                 // ============================================================
@@ -671,6 +793,16 @@
                         // Info overlay showing peer identity
                         const info = $v("div", { class: "info" }, infoChildren);
 
+                        // Call timer overlay (bottom center)
+                        const callTimer = $v(
+                            "div",
+                            {
+                                class: "call-timer",
+                                style: "position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background-color: rgba(0, 0, 0, 0.7); color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 10; font-family: monospace;",
+                            },
+                            "0:00",
+                        );
+
                         // ============================================================
                         // CONTROL BUTTONS (hang up, block, fullscreen)
                         // ============================================================
@@ -685,12 +817,11 @@
                         );
                         hangUpBtn._.on("click", () => hangUpPeer(call.peer)); // Disconnect this peer
 
-                        // Block button (currently disabled)
+                        // Block button
                         const blockBtn = $v(
                             "button",
                             {
                                 class: "btn btn-warning btn-sm block-btn",
-                                disabled: "disabled", // Not fully implemented
                             },
                             $v("i", { class: "fas fa-trash" }),
                         );
@@ -733,6 +864,7 @@
                         videoBox._.append(fullScrBtn);
                         videoBox._.append(statusIcons);
                         videoBox._.append(info);
+                        videoBox._.append(callTimer); // Add call timer
                         videoBox._.append(hangUpBtn);
                         videoBox._.append(blockBtn);
                         videoColumn._.append(videoBox);
@@ -755,6 +887,15 @@
                                 console.log(
                                     `handleCall: remoteVideo.srcObject updated via ontrack for ${call.peer}`,
                                 );
+
+                                // Start call timer when first track is received
+                                // Use setTimeout to ensure DOM is fully mounted
+                                if (!callTimers.has(call.peer)) {
+                                    setTimeout(
+                                        () => startCallTimer(call.peer),
+                                        100,
+                                    );
+                                }
                             } else {
                                 console.warn(
                                     `handleCall: No stream found in ontrack event for ${call.peer}`,
@@ -793,6 +934,9 @@
                             remoteVideo.$.node.srcObject = remoteStream;
                             call.remoteStream = remoteStream;
                             outgoingCallsInProgress.delete(call.peer); // Call established, remove from outgoing set
+
+                            // Start call timer when stream is established
+                            startCallTimer(call.peer);
                         });
 
                         // 'close' event - cleanup when call ends
@@ -800,6 +944,7 @@
                             console.log(
                                 `handleCall: Call closed for ${call.peer}`,
                             );
+                            stopCallTimer(call.peer); // Stop and clear the timer
                             videoColumn._.remove(); // Remove video UI
                             calls.delete(call.peer); // Remove from active calls
                             outgoingCallsInProgress.delete(call.peer); // Remove from outgoing calls set
@@ -1083,6 +1228,85 @@
                     const conn = dataConnections.get(peerId);
                     if (conn) conn.connection.close(); // Close data connection
                     updatePeerList(); // Refresh peer list (blocked peers won't show)
+                    updateBlockedButton(); // Update blocked peers button state
+                }
+
+                /**
+                 * Unblocks a peer
+                 * - Removes from blockedPeers set
+                 * - Updates localStorage
+                 * - Refreshes peer list
+                 *
+                 * @param {string} peerId - Peer ID to unblock
+                 */
+                function unblockPeer(peerId) {
+                    blockedPeers.delete(peerId); // Remove from blocked set
+                    localStorage.setItem(
+                        "blockedPeers",
+                        JSON.stringify([...blockedPeers]), // Update localStorage
+                    );
+                    updatePeerList(); // Refresh peer list
+                    updateBlockedButton(); // Update button state
+                    populateBlockedPeersList(); // Refresh blocked peers modal
+                    console.log(`Unblocked peer: ${peerId}`);
+                }
+
+                /**
+                 * Updates the manage blocked peers button state
+                 * - Enables button if there are blocked peers
+                 * - Disables button if no blocked peers
+                 */
+                function updateBlockedButton() {
+                    const hasBlockedPeers = blockedPeers.size > 0;
+                    if (hasBlockedPeers) {
+                        manageBlockedBtn.$.node.removeAttribute("disabled");
+                    } else {
+                        manageBlockedBtn.$.node.setAttribute(
+                            "disabled",
+                            "disabled",
+                        );
+                    }
+                }
+
+                /**
+                 * Populates the blocked peers list in the modal
+                 */
+                function populateBlockedPeersList() {
+                    // Clear existing list
+                    blockedPeersList.$.node.innerHTML = "";
+
+                    if (blockedPeers.size === 0) {
+                        // Show "no blocked peers" message
+                        blockedPeersList.$.node.style.display = "none";
+                        noBlockedPeers.$.node.style.display = "block";
+                    } else {
+                        // Show blocked peers list
+                        blockedPeersList.$.node.style.display = "block";
+                        noBlockedPeers.$.node.style.display = "none";
+
+                        // Create list items for each blocked peer
+                        blockedPeers.forEach((peerId) => {
+                            const peerItem = document.createElement("div");
+                            peerItem.className =
+                                "flex items-center justify-between p-3 bg-base-200 rounded-lg";
+
+                            const peerIdSpan = document.createElement("span");
+                            peerIdSpan.className = "font-mono font-semibold";
+                            peerIdSpan.textContent = peerId;
+
+                            const unblockBtn = document.createElement("button");
+                            unblockBtn.className = "btn btn-success btn-sm";
+                            unblockBtn.innerHTML =
+                                '<i class="fas fa-user-check mr-1"></i> Unblock';
+                            unblockBtn.addEventListener("click", () => {
+                                unblockPeer(peerId);
+                            });
+
+                            peerItem.appendChild(peerIdSpan);
+                            peerItem.appendChild(unblockBtn);
+                            blockedPeersList.$.node.appendChild(peerItem);
+                        });
+                    }
                 }
 
                 /**
@@ -1475,6 +1699,30 @@
                     localStorage.setItem("peerId", peerId); // Save new ID
                     initializePeer(); // Reconnect with new ID
                 });
+
+                // ============================================================
+                // EVENT HANDLERS - Blocked Peers Management
+                // ============================================================
+
+                /**
+                 * MANAGE BLOCKED PEERS BUTTON
+                 * Opens modal to view and unblock peers
+                 */
+                manageBlockedBtn._.on("click", () => {
+                    populateBlockedPeersList(); // Populate the list
+                    blockedPeersModal.$.node.showModal(); // Show modal
+                });
+
+                /**
+                 * CLOSE BLOCKED MODAL BUTTON
+                 * Closes the blocked peers modal
+                 */
+                closeBlockedModalBtn._.on("click", () => {
+                    blockedPeersModal.$.node.close();
+                });
+
+                // Initialize blocked button state on load
+                updateBlockedButton();
 
                 // ============================================================
                 // EVENT HANDLERS - Profile Settings Modal (DaisyUI Dialog)
