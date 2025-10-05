@@ -802,6 +802,11 @@
                             );
                             videoColumn._.remove(); // Remove video UI
                             calls.delete(call.peer); // Remove from active calls
+                            outgoingCallsInProgress.delete(call.peer); // Remove from outgoing calls set
+                            console.log(
+                                `handleCall: Cleaned up call state for ${call.peer}. Outgoing calls in progress:`,
+                                Array.from(outgoingCallsInProgress)
+                            );
                         });
 
                         // Store call in active calls map
@@ -855,6 +860,10 @@
                                     localStream, // Start media call with our stream
                                 );
                                 outgoingCallsInProgress.add(conn.peer); // Mark as outgoing call
+                                console.log(
+                                    `handleDataConnection: Added ${conn.peer} to outgoingCallsInProgress. Current set:`,
+                                    Array.from(outgoingCallsInProgress)
+                                );
                                 handleCall(mediaCall); // Set up video UI and handlers
                                 updateMuteStatus(conn.peer, {
                                     audioMuted: data.audioMuted,
