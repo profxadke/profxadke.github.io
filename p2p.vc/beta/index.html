@@ -118,6 +118,85 @@
             .controls {
                 padding: var(--padding-card, 1rem);
             }
+
+            /* Chat Panel Styles */
+            .chat-panel {
+                height: 60px;
+                transition: height 0.3s ease-in-out;
+                overflow: hidden;
+                background-color: var(--b1);
+            }
+
+            .chat-panel.open {
+                height: calc(60vh + 60px);
+                background-color: var(--b1);
+            }
+
+            /* Ensure chat content has proper background when expanded */
+            .chat-panel .chat-content {
+                display: none;
+            }
+
+            .chat-panel.open .chat-content {
+                display: block !important;
+            }
+
+            .chat-panel .dropdown:hover .dropdown-content {
+                display: block;
+            }
+
+            .chat-messages {
+                scroll-behavior: smooth;
+            }
+
+            .chat-message {
+                padding: 6px 8px;
+                border-radius: 8px;
+                max-width: 85%;
+                word-wrap: break-word;
+            }
+
+            .chat-message.own {
+                background-color: var(--p, #3b82f6);
+                color: var(--pc, #ffffff);
+                text-align: right;
+            }
+
+            .chat-message.other {
+                background-color: var(--b3, #e5e7eb);
+                color: var(--bc, #1f2937);
+            }
+
+            .chat-message .sender {
+                font-weight: 600;
+                font-size: 0.75rem;
+                margin-bottom: 2px;
+                [data-theme="light"] & {
+                    color: var(--inc, #6b7280);
+                }
+                [data-theme="dark"] & {
+                    color: var(--inc, #d1d5db);
+                }
+            }
+
+            .chat-message.own .sender {
+                [data-theme="light"] & {
+                    color: rgba(255, 255, 255, 0.8);
+                }
+                [data-theme="dark"] & {
+                    color: rgba(255, 255, 255, 0.8);
+                }
+            }
+
+            .chat-message .content {
+                font-size: 0.875rem;
+            }
+
+            .chat-message .timestamp {
+                font-size: 0.625rem;
+                opacity: 0.7;
+                margin-top: 2px;
+            }
         </style>
     </head>
     <body class="bg-base-100">
@@ -256,7 +335,7 @@
                 </div>
 
                 <!-- Video Grid -->
-                <div class="w-full lg:w-3/4">
+                <div class="w-full lg:w-3/4 relative">
                     <div
                         id="videos"
                         class="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -294,6 +373,117 @@
                                     />
                                     <span id="local-name"></span>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Panel -->
+                    <div
+                        id="chat-panel"
+                        class="chat-panel fixed bottom-0 left-0 bg-base-100 rounded-t-lg shadow-lg z-10"
+                        style="width: 320px"
+                    >
+                        <!-- Chat Header/Handle -->
+                        <div
+                            id="chat-header"
+                            class="flex items-center justify-between p-3 bg-primary rounded-t-lg cursor-pointer"
+                            style="height: 60px"
+                        >
+                            <div
+                                class="flex items-center gap-2 text-primary-content"
+                            >
+                                <i class="fas fa-comments"></i>
+                                <span class="font-semibold text-sm">Chat</span>
+                                <span
+                                    id="unread-count"
+                                    class="badge badge-sm bg-error text-error-content hidden"
+                                ></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="dropdown dropdown-end">
+                                    <div class="chat-settings-btn">
+                                        <i
+                                            class="fas fa-chevron-up text-primary-content text-sm"
+                                        ></i>
+                                    </div>
+                                    <ul
+                                        tabindex="0"
+                                        class="dropdown-content menu bg-base-100 text-base-content rounded-box z-[1] w-48 p-2 shadow"
+                                    >
+                                        <li id="clear-chat-btn">
+                                            <a class="text-error">
+                                                <i class="fas fa-trash-alt"></i>
+                                                Clear Chat
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="text-primary-content">
+                                    <i class="fas fa-times text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Content -->
+                        <div
+                            id="chat-content"
+                            class="chat-content bg-base-100"
+                            style="position: relative; height: 60vh"
+                        >
+                            <!-- Messages Container -->
+                            <div
+                                id="chat-messages"
+                                class="messages"
+                                style="
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                    right: 0;
+                                    bottom: 60px;
+                                    overflow-y: auto;
+                                    padding: 8px 12px;
+                                    scroll-behavior: smooth;
+                                "
+                            ></div>
+
+                            <!-- Message Input - Fixed at bottom -->
+                            <div
+                                class="message-input border-t border-base-content/20 bg-base-content/5"
+                                style="
+                                    position: absolute;
+                                    bottom: 0;
+                                    left: 0;
+                                    right: 0;
+                                    height: 60px;
+                                    padding: 12px;
+                                "
+                            >
+                                <form
+                                    id="chat-form"
+                                    class="flex gap-2 w-full h-full"
+                                >
+                                    <input
+                                        type="text"
+                                        id="chat-input"
+                                        placeholder="Type a message..."
+                                        class="input input-bordered input-sm flex-1"
+                                        maxlength="500"
+                                        autocomplete="off"
+                                        style="height: 100%; margin: 0"
+                                    />
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        id="send-chat-btn"
+                                        style="
+                                            height: 100%;
+                                            padding-left: 12px;
+                                            padding-right: 12px;
+                                        "
+                                    >
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -470,6 +660,15 @@
                 const closeBlockedModalBtn = $("#close-blocked-modal-btn"); // Close blocked modal button
                 const themeToggleBtn = $("#theme-toggle-btn"); // Theme toggle button
                 const themeIcon = $("#theme-icon"); // Icon inside theme toggle button
+                const chatPanel = $("#chat-panel"); // Chat panel container
+                const chatHeader = $("#chat-header"); // Chat header/handle
+                const chatContent = $("#chat-content"); // Chat content container
+                const chatMessagesEl = $("#chat-messages"); // Messages container
+                const chatForm = $("#chat-form"); // Chat message form
+                const chatInput = $("#chat-input"); // Chat input field
+                const sendChatBtn = $("#send-chat-btn"); // Send chat message button
+                const clearChatBtn = $("#clear-chat-btn"); // Clear chat button
+                const unreadCount = $("#unread-count"); // Unread messages counter
                 const localVideoContainer = $("#local-video-container"); // Container for local video
                 const localAudioMuteIcon = $("#local-audio-mute-icon"); // Icon showing local audio is muted
                 const localVideoMuteIcon = $("#local-video-mute-icon"); // Icon showing local video is muted
@@ -490,6 +689,13 @@
                 const outgoingCallsInProgress = new Set(); // Set<peerId> - prevents accepting incoming call from peer we're calling
                 const iceCandidateQueues = new Map(); // Map<peerId, Array<RTCIceCandidate>> - queues ICE candidates received before remote description is set
                 const callTimers = new Map(); // Map<peerId, {startTime, intervalId}> - tracks call duration timers
+
+                // ===================
+                // CHAT SYSTEM STATE
+                // ===================
+                let chatMessages = []; // Array of chat messages
+                let unreadMessages = 0; // Number of unread messages
+                let isChatOpen = false; // Whether chat panel is expanded
 
                 // ============================================================
                 // USER METADATA
@@ -602,6 +808,198 @@
                         callTimers.delete(peerId);
                         console.log(`Stopped call timer for ${peerId}`);
                     }
+                }
+
+                // ===================
+                // CHAT SYSTEM FUNCTIONS
+                // ===================
+
+                /**
+                 * Toggles the chat panel visibility
+                 */
+                function toggleChatPanel() {
+                    if (isChatOpen) {
+                        hideChatPanel();
+                    } else {
+                        showChatPanel();
+                    }
+                }
+
+                /**
+                 * Shows the chat panel
+                 */
+                function showChatPanel() {
+                    chatPanel.$.node.classList.add("open");
+                    setTimeout(() => {
+                        // Add display block after animation starts
+                        const chatContentElement =
+                            document.getElementById("chat-content");
+                        chatContentElement.style.display = "block";
+                        // Scroll to bottom to show latest messages
+                        const messagesElement =
+                            document.getElementById("chat-messages");
+                        if (messagesElement) {
+                            messagesElement.scrollTop =
+                                messagesElement.scrollHeight;
+                        }
+                    }, 50); // Short delay to start after animation begins
+                    isChatOpen = true;
+                    unreadMessages = 0;
+                    updateUnreadCount();
+                    updateChatHeader();
+                }
+
+                /**
+                 * Hides the chat panel
+                 */
+                function hideChatPanel() {
+                    chatPanel.$.node.classList.remove("open");
+                    chatContent.$.node.style.display = "none";
+                    isChatOpen = false;
+                    updateUnreadCount();
+                    updateChatHeader();
+                }
+
+                /**
+                 * Adds a chat message to the messages array and UI
+                 * @param {Object} message - {senderId, senderName, content, timestamp, isOwn}
+                 */
+                function addChatMessage(senderId, senderName, content) {
+                    const message = {
+                        senderId,
+                        senderName,
+                        content: content.trim(),
+                        timestamp: new Date(),
+                        isOwn: senderId === peer.id,
+                    };
+
+                    chatMessages.push(message);
+                    renderChatMessage(message);
+
+                    // If chat is closed, increment unread count
+                    if (!isChatOpen) {
+                        unreadMessages++;
+                        updateUnreadCount();
+                    }
+                }
+
+                /**
+                 * Renders a chat message in the UI
+                 * @param {Object} message - Message object to render
+                 */
+                function renderChatMessage(message) {
+                    const messageEl = document.createElement("div");
+                    messageEl.className = `chat-message ${message.isOwn ? "own" : "other"}`;
+
+                    const senderSpan = document.createElement("div");
+                    senderSpan.className = "sender";
+                    senderSpan.textContent = message.senderName;
+
+                    const contentSpan = document.createElement("div");
+                    contentSpan.className = "content";
+                    contentSpan.textContent = message.content;
+
+                    const timestampSpan = document.createElement("div");
+                    timestampSpan.className = "timestamp";
+                    timestampSpan.textContent = formatMessageTime(
+                        message.timestamp,
+                    );
+
+                    messageEl.appendChild(senderSpan);
+                    messageEl.appendChild(contentSpan);
+                    messageEl.appendChild(timestampSpan);
+
+                    const messagesElement =
+                        document.getElementById("chat-messages");
+                    messagesElement.appendChild(messageEl);
+
+                    // Auto-scroll to bottom only if chat is open
+                    if (isChatOpen) {
+                        setTimeout(() => {
+                            messagesElement.scrollTop =
+                                messagesElement.scrollHeight;
+                        }, 10);
+                    }
+                }
+
+                /**
+                 * Formats a timestamp for chat messages
+                 * @param {Date} date - Date object
+                 * @returns {string} Formatted time string
+                 */
+                function formatMessageTime(date) {
+                    const hours = date.getHours().toString().padStart(2, "0");
+                    const minutes = date
+                        .getMinutes()
+                        .toString()
+                        .padStart(2, "0");
+                    return `${hours}:${minutes}`;
+                }
+
+                /**
+                 * Updates the unread messages counter
+                 */
+                function updateUnreadCount() {
+                    if (unreadMessages > 0 && !isChatOpen) {
+                        unreadCount.$.node.textContent =
+                            unreadMessages > 99 ? "99+" : unreadMessages;
+                        unreadCount.$.node.classList.remove("hidden");
+                    } else {
+                        unreadCount.$.node.classList.add("hidden");
+                    }
+                }
+
+                /**
+                 * Updates the chat header indicator
+                 */
+                function updateChatHeader() {
+                    const chevronIcon = document.querySelector(
+                        ".chat-settings-btn i",
+                    );
+                    if (chevronIcon) {
+                        chevronIcon.className = `fas fa-chevron-${isChatOpen ? "down" : "up"} text-primary-content text-sm`;
+                    }
+                }
+
+                /**
+                 * Sends a chat message to all connected peers
+                 * @param {string} message - Message content
+                 */
+                function sendChatMessage(message) {
+                    if (!message.trim()) return;
+
+                    // Add message to local chat
+                    addChatMessage(peer.id, localMetadata.name, message);
+
+                    // Send message via data connections to all connected peers
+                    for (const [
+                        peerId,
+                        dataConn,
+                    ] of dataConnections.entries()) {
+                        if (dataConn.connection && dataConn.connection.open) {
+                            dataConn.connection.send({
+                                type: "chat",
+                                senderId: peer.id,
+                                senderName: localMetadata.name,
+                                content: message.trim(),
+                            });
+                        }
+                    }
+
+                    // Clear input
+                    chatInput.$.node.value = "";
+                }
+
+                /**
+                 * Clears all chat messages
+                 */
+                function clearChatMessages() {
+                    chatMessages.length = 0;
+                    const messagesElement =
+                        document.getElementById("chat-messages");
+                    messagesElement.innerHTML = "";
+                    unreadMessages = 0;
+                    updateUnreadCount();
                 }
 
                 // ============================================================
@@ -1120,6 +1518,19 @@
                                         `Queued ICE candidate from ${conn.peer}.`,
                                     );
                                 }
+                                break;
+                            }
+                            case "chat": {
+                                // Received chat message from peer
+                                console.log(
+                                    `handleDataConnection: Received chat message from ${conn.peer}`,
+                                    data,
+                                );
+                                addChatMessage(
+                                    data.senderId,
+                                    data.senderName,
+                                    data.content,
+                                );
                                 break;
                             }
                         }
@@ -1842,6 +2253,14 @@
                 // Initialize theme on load
                 initializeTheme();
 
+                // Initialize chat header state
+                updateChatHeader();
+
+                // Initialize chat panel with proper event handler
+                // Make sure chat is collapsed initially
+                hideChatPanel();
+                isChatOpen = false;
+
                 // Check for screen sharing capability and conditionally show/hide button
                 if (!navigator.mediaDevices.getDisplayMedia) {
                     // Screen sharing not supported - remove the button
@@ -1917,6 +2336,154 @@
                         alert("Name is required");
                     }
                 });
+
+                // ============================================================
+                // EVENT HANDLERS - Chat System
+                // ============================================================
+
+                // Chat header event handler handled below with direct DOM access
+
+                // Replace yokto.js event handlers with robust vanilla JavaScript
+                setTimeout(() => {
+                    // =========================
+                    // CHAT HEADER TOGGLE
+                    // =========================
+                    const chatHeaderElement =
+                        document.getElementById("chat-header");
+                    if (chatHeaderElement) {
+                        chatHeaderElement.addEventListener(
+                            "click",
+                            function (event) {
+                                console.log(
+                                    "Chat header clicked!",
+                                    event.target,
+                                );
+                                // Don't toggle if clicking on dropdown or form elements
+                                if (
+                                    event.target.closest(".dropdown") ||
+                                    event.target.tagName === "BUTTON" ||
+                                    event.target.closest("form")
+                                ) {
+                                    return;
+                                }
+                                toggleChatPanel();
+                            },
+                        );
+                        console.log(
+                            "Chat header click handler attached successfully",
+                        );
+                    } else {
+                        console.error("Chat header element not found!");
+                    }
+
+                    // =========================
+                    // CHAT FORM SUBMIT
+                    // =========================
+                    const chatFormElement =
+                        document.getElementById("chat-form");
+                    if (chatFormElement) {
+                        chatFormElement.addEventListener(
+                            "submit",
+                            function (e) {
+                                e.preventDefault(); // Prevent form submission
+                                const chatInputElement =
+                                    document.getElementById("chat-input");
+                                const message = chatInputElement.value.trim();
+                                console.log(
+                                    "Send button clicked, message:",
+                                    message,
+                                );
+                                if (message) {
+                                    sendChatMessage(message);
+                                }
+                            },
+                        );
+                        console.log(
+                            "Chat form submit handler attached successfully",
+                        );
+                    } else {
+                        console.error("Chat form element not found!");
+                    }
+
+                    // =========================
+                    // CHAT INPUT ENTER KEY
+                    // =========================
+                    const chatInputElement =
+                        document.getElementById("chat-input");
+                    if (chatInputElement) {
+                        chatInputElement.addEventListener(
+                            "keypress",
+                            function (e) {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                    e.preventDefault(); // Prevent new line
+                                    const message =
+                                        chatInputElement.value.trim();
+                                    console.log(
+                                        "Enter pressed, message:",
+                                        message,
+                                    );
+                                    if (message) {
+                                        sendChatMessage(message);
+                                    }
+                                }
+                            },
+                        );
+                        console.log(
+                            "Chat input keypress handler attached successfully",
+                        );
+                    } else {
+                        console.error("Chat input element not found!");
+                    }
+
+                    // =========================
+                    // SEND BUTTON DIRECT CLICK
+                    // =========================
+                    const sendChatBtnElement =
+                        document.getElementById("send-chat-btn");
+                    if (sendChatBtnElement) {
+                        sendChatBtnElement.addEventListener(
+                            "click",
+                            function (e) {
+                                e.preventDefault();
+                                const chatInputElement =
+                                    document.getElementById("chat-input");
+                                const message = chatInputElement.value.trim();
+                                console.log(
+                                    "Send button clicked directly, message:",
+                                    message,
+                                );
+                                if (message) {
+                                    sendChatMessage(message);
+                                }
+                            },
+                        );
+                        console.log(
+                            "Send chat button click handler attached successfully",
+                        );
+                    } else {
+                        console.error("Send chat button element not found!");
+                    }
+
+                    // =========================
+                    // CLEAR CHAT BUTTON - Remove all messages
+                    // =========================
+                    const clearChatBtnElement =
+                        document.getElementById("clear-chat-btn");
+                    if (clearChatBtnElement) {
+                        clearChatBtnElement.addEventListener(
+                            "click",
+                            function (e) {
+                                e.preventDefault();
+                                clearChatMessages();
+                            },
+                        );
+                        console.log(
+                            "Clear chat button handler attached successfully",
+                        );
+                    } else {
+                        console.error("Clear chat button element not found!");
+                    }
+                }, 100); // Small delay to ensure DOM is ready
             });
         </script>
     </body>
