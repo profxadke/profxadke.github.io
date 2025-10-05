@@ -411,7 +411,7 @@
                         "User" + Math.floor(Math.random() * 1000),
                     avatar_url:
                         localStorage.getItem("userAvatarUrl") || // Retrieve saved avatar or generate random
-                        `https://i.pravatar.cc/150?u=${Math.random()}`,
+                        "https://osho.is-a.dev/p2p.vc/avatar.png",
                     custom: {
                         status: "Available", // Custom status field (extensible)
                     },
@@ -805,7 +805,7 @@
                             outgoingCallsInProgress.delete(call.peer); // Remove from outgoing calls set
                             console.log(
                                 `handleCall: Cleaned up call state for ${call.peer}. Outgoing calls in progress:`,
-                                Array.from(outgoingCallsInProgress)
+                                Array.from(outgoingCallsInProgress),
                             );
                         });
 
@@ -862,7 +862,7 @@
                                 outgoingCallsInProgress.add(conn.peer); // Mark as outgoing call
                                 console.log(
                                     `handleDataConnection: Added ${conn.peer} to outgoingCallsInProgress. Current set:`,
-                                    Array.from(outgoingCallsInProgress)
+                                    Array.from(outgoingCallsInProgress),
                                 );
                                 handleCall(mediaCall); // Set up video UI and handlers
                                 updateMuteStatus(conn.peer, {
@@ -1513,7 +1513,8 @@
                         localStorage.setItem("userName", newName); // Persist
 
                         // Generate new random avatar
-                        localMetadata.avatar_url = `https://i.pravatar.cc/150?u=${Math.random()}`;
+                        localMetadata.avatar_url =
+                            "https://osho.is-a.dev/p2p.vc/avatar.png";
                         localStorage.setItem(
                             "userAvatarUrl",
                             localMetadata.avatar_url,
