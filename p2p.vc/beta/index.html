@@ -126,6 +126,38 @@
             <div class="flex flex-col lg:flex-row gap-6">
                 <!-- Sidebar -->
                 <div class="w-full lg:w-1/4 space-y-4">
+
+                    <!-- Connect Box (Hidden) -->
+                    <div
+                        class="card bg-base-100 shadow-xl"
+                        style="display: none"
+                    >
+                        <div class="card-body">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold"
+                                        >Connect to Peer</span
+                                    >
+                                </label>
+                                <input
+                                    type="text"
+                                    id="peer-id-input"
+                                    placeholder="Enter Peer ID"
+                                    class="input input-bordered w-full"
+                                />
+                            </div>
+                            <div class="card-actions justify-start mt-2">
+                                <button
+                                    class="btn btn-primary"
+                                    aria-label="Connect button"
+                                    id="connect-btn"
+                                >
+                                    Connect
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Controls Card -->
                     <div class="card bg-primary shadow-xl">
                         <div class="card-body">
