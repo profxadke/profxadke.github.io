@@ -126,37 +126,6 @@
             <div class="flex flex-col lg:flex-row gap-6">
                 <!-- Sidebar -->
                 <div class="w-full lg:w-1/4 space-y-4">
-                    <!-- Connect Box (Hidden) -->
-                    <div
-                        class="card bg-base-100 shadow-xl"
-                        style="display: none"
-                    >
-                        <div class="card-body">
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text font-semibold"
-                                        >Connect to Peer</span
-                                    >
-                                </label>
-                                <input
-                                    type="text"
-                                    id="peer-id-input"
-                                    placeholder="Enter Peer ID"
-                                    class="input input-bordered w-full"
-                                />
-                            </div>
-                            <div class="card-actions justify-start mt-2">
-                                <button
-                                    class="btn btn-primary"
-                                    aria-label="Connect button"
-                                    id="connect-btn"
-                                >
-                                    Connect
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Controls Card -->
                     <div class="card bg-primary shadow-xl">
                         <div class="card-body">
@@ -1647,6 +1616,11 @@
                  * - Auto-stops if user clicks "Stop sharing" in browser
                  */
                 shareScreenBtn._.on("click", async () => {
+                    // Guard against unsupported browsers (though button should be hidden)
+                    if (!navigator.mediaDevices.getDisplayMedia) {
+                        alert("Screen sharing is not supported on this device");
+                        return;
+                    }
                     if (isScreenSharing) {
                         // Switch back to camera
                         const newCameraStream =
@@ -1683,6 +1657,9 @@
                             };
                         } catch (error) {
                             console.error("Error sharing screen:", error);
+                            // If screen sharing fails, reset state
+                            isScreenSharing = false;
+                            shareScreenBtn.$.node.innerHTML = '<i class="fas fa-desktop"></i>';
                         }
                     }
                 });
@@ -1723,6 +1700,15 @@
 
                 // Initialize blocked button state on load
                 updateBlockedButton();
+
+                // Check for screen sharing capability and conditionally show/hide button
+                if (!navigator.mediaDevices.getDisplayMedia) {
+                    // Screen sharing not supported - remove the button
+                    shareScreenBtn.$.node.style.display = 'none';
+                    console.log('Screen sharing not supported - button removed');
+                } else {
+                    console.log('Screen sharing supported');
+                }
 
                 // ============================================================
                 // EVENT HANDLERS - Profile Settings Modal (DaisyUI Dialog)
