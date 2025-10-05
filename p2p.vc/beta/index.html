@@ -374,7 +374,8 @@
                   hangUpBtn._.on('click', () => hangUpPeer(call.peer));
 
                   const blockBtn = $v('a', {
-                      class: 'button is-warning is-small block-btn'
+                      class: 'button is-warning is-small block-btn',
+                      disabled: 'disabled'
                   }, $v('i', { class: 'fas fa-trash' }));
                   blockBtn._.on('click', () => blockPeer(call.peer));
 
