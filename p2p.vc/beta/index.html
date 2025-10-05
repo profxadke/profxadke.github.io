@@ -23,11 +23,13 @@
             content="https://opengraph.b-cdn.net/production/images/615a02c6-2923-48d9-b1ec-50c6e27c5d06.png?token=JmMVYG07SFugbkLOXnU2VTn_7tFDja2Sx-LdZtIxFAY&height=800&width=1200&expires=33295584976"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- Tailwind CSS + DaisyUI -->
         <link
+            href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css"
             rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+            type="text/css"
         />
-        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativebulma/bulma-tooltip@1.2.0/dist/bulma-tooltip.min.css"> -->
+        <script src="https://cdn.tailwindcss.com"></script>
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
@@ -41,8 +43,8 @@
             }
             .status-icons {
                 position: absolute;
-                top: 10px;
-                left: 10px;
+                bottom: 10px;
+                right: 10px;
                 display: flex;
                 gap: 10px;
                 z-index: 10;
@@ -103,342 +105,437 @@
             }
         </style>
     </head>
-    <body>
-        <section class="hero is-primary">
-            <div class="hero-body">
-                <p class="title" style="color: #000">
+    <body class="bg-base-200">
+        <!-- Hero Section -->
+        <div class="bg-primary py-8">
+            <div class="container mx-auto px-4">
+                <h1 class="text-4xl font-bold text-primary-content">
                     P2P Group Calling (PeerJS)
+                </h1>
+                <p class="text-xl text-primary-content mt-2" id="my-id">
+                    Your ID:
                 </p>
-                <p class="subtitle" id="my-id" style="color: #000">Your ID:</p>
-                <p class="subtitle" style="text-align: right; color: #000">
+                <p class="text-sm text-primary-content text-right">
                     Powered by yokto.js
                 </p>
             </div>
-        </section>
+        </div>
 
-        <section class="section">
-            <div class="container">
-                <div class="columns">
-                    <div class="column is-one-quarter">
-                        <div class="box" style="display: none">
-                            <div class="field">
-                                <label class="label">Connect to Peer</label>
-                                <div class="control">
-                                    <input
-                                        class="input"
-                                        type="text"
-                                        id="peer-id-input"
-                                        placeholder="Enter Peer ID"
-                                    />
-                                </div>
-                            </div>
-                            <div class="field is-grouped">
-                                <div class="control">
-                                    <button
-                                        class="button is-link"
-                                        aria-label="Connect button"
-                                        id="connect-btn"
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Sidebar -->
+                <div class="w-full lg:w-1/4 space-y-4">
+                    <!-- Connect Box (Hidden) -->
+                    <div
+                        class="card bg-base-100 shadow-xl"
+                        style="display: none"
+                    >
+                        <div class="card-body">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold"
+                                        >Connect to Peer</span
                                     >
-                                        Connect
-                                    </button>
-                                </div>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="peer-id-input"
+                                    placeholder="Enter Peer ID"
+                                    class="input input-bordered w-full"
+                                />
+                            </div>
+                            <div class="card-actions justify-start mt-2">
+                                <button
+                                    class="btn btn-primary"
+                                    aria-label="Connect button"
+                                    id="connect-btn"
+                                >
+                                    Connect
+                                </button>
                             </div>
                         </div>
-                        <div class="box" style="background-color: #00d1b2">
-                            <p class="menu-label" style="color: #000">
+                    </div>
+
+                    <!-- Controls Card -->
+                    <div class="card bg-primary shadow-xl">
+                        <div class="card-body">
+                            <h2 class="card-title text-primary-content">
                                 Controls
-                            </p>
-                            <div class="buttons">
+                            </h2>
+                            <div class="flex flex-wrap gap-2">
                                 <button
                                     aria-label="Hangup button"
-                                    class="button is-danger"
+                                    class="btn btn-error btn-sm"
                                     id="hang-up-btn"
-                                    alt="Hang Up All Peer(s)"
+                                    title="Hang Up All Peer(s)"
                                 >
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 <button
                                     aria-label="Mute button"
-                                    class="button"
+                                    class="btn btn-neutral btn-sm"
                                     id="mute-audio-btn"
                                 >
                                     <i class="fas fa-microphone-slash"></i>
                                 </button>
                                 <button
                                     aria-label="Disable video button"
-                                    class="button"
+                                    class="btn btn-neutral btn-sm"
                                     id="mute-video-btn"
                                 >
                                     <i class="fas fa-video-slash"></i>
                                 </button>
                                 <button
                                     aria-label="Screen-share button"
-                                    class="button"
-                                    data-tooltip="Screen Sharing"
+                                    class="btn btn-neutral btn-sm tooltip"
+                                    data-tip="Screen Sharing"
                                     id="share-screen-btn"
                                 >
                                     <i class="fas fa-desktop"></i>
                                 </button>
                                 <button
                                     aria-label="Button for resetting ID"
-                                    class="button"
+                                    class="btn btn-neutral btn-sm"
                                     id="reset-id"
                                 >
                                     Reset ID
                                 </button>
                                 <button
-                                    aria-label="Prefrences button"
-                                    class="button is-info"
+                                    aria-label="Preferences button"
+                                    class="btn btn-info btn-sm"
                                     id="update-profile-btn"
                                 >
                                     <i class="fas fa-gear"></i>
                                 </button>
                             </div>
                         </div>
-                        <nav class="panel" style="background-color: #00d1b2">
-                            <p class="panel-heading">Available Peers</p>
-                            <div id="peer-list" class="panel-block"></div>
-                        </nav>
                     </div>
-                    <div class="column">
-                        <div id="videos" class="columns is-multiline">
-                            <div class="column is-half">
-                                <div
-                                    class="box video-container"
-                                    id="local-video-container"
-                                >
-                                    <video
-                                        id="local-video"
-                                        style="
-                                            border-radius: 6px;
-                                            pointer-events: none;
-                                        "
-                                        autoplay
-                                        muted
-                                    ></video>
-                                    <div class="status-icons">
-                                        <i
-                                            class="fas fa-microphone-slash"
-                                            id="local-audio-mute-icon"
-                                            style="display: none"
-                                        ></i>
-                                        <i
-                                            class="fas fa-video-slash"
-                                            id="local-video-mute-icon"
-                                            style="display: none"
-                                        ></i>
-                                    </div>
-                                    <div class="info">
-                                        <img
-                                            id="local-avatar"
-                                            src=""
-                                            alt="Avatar"
-                                        />
-                                        <span id="local-name"></span>
-                                    </div>
+
+                    <!-- Available Peers Card -->
+                    <div class="card bg-primary shadow-xl">
+                        <div class="card-body p-0">
+                            <h2
+                                class="card-title text-primary-content px-4 pt-4 pb-2"
+                            >
+                                Available Peers
+                            </h2>
+                            <div id="peer-list" class="flex flex-col"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Grid -->
+                <div class="w-full lg:w-3/4">
+                    <div
+                        id="videos"
+                        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                    >
+                        <!-- Local Video -->
+                        <div
+                            class="card bg-base-100 shadow-xl video-container"
+                            id="local-video-container"
+                        >
+                            <div class="card-body p-0">
+                                <video
+                                    id="local-video"
+                                    class="rounded-2xl w-full"
+                                    style="pointer-events: none"
+                                    autoplay
+                                    muted
+                                ></video>
+                                <div class="status-icons">
+                                    <i
+                                        class="fas fa-microphone-slash"
+                                        id="local-audio-mute-icon"
+                                        style="display: none"
+                                    ></i>
+                                    <i
+                                        class="fas fa-video-slash"
+                                        id="local-video-mute-icon"
+                                        style="display: none"
+                                    ></i>
+                                </div>
+                                <div class="info">
+                                    <img
+                                        id="local-avatar"
+                                        src=""
+                                        alt="Avatar"
+                                    />
+                                    <span id="local-name"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
+        <!-- Call Notification (Toast/Alert) -->
         <div
             id="call-notification"
-            class="notification is-info"
+            class="alert alert-info shadow-lg"
             style="
                 display: none;
                 position: fixed;
                 top: 80px;
                 right: 20px;
                 z-index: 1000;
+                max-width: 400px;
             "
         >
-            <p id="call-notification-text"></p>
-            <div class="buttons mt-2">
+            <div>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    class="stroke-current flex-shrink-0 w-6 h-6"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                </svg>
+                <span id="call-notification-text"></span>
+            </div>
+            <div class="flex gap-2">
                 <button
                     aria-label="Accept button"
                     id="accept-call-btn"
-                    class="button is-success"
+                    class="btn btn-success btn-sm"
                 >
                     Accept
                 </button>
                 <button
                     aria-label="Deny button"
                     id="deny-call-btn"
-                    class="button is-danger"
+                    class="btn btn-error btn-sm"
                 >
                     Deny
                 </button>
             </div>
         </div>
 
-        <div id="profile-modal" class="modal">
-            <div class="modal-background"></div>
-            <div class="modal-card">
-                <header class="modal-card-head">
-                    <p class="modal-card-title">Update Profile</p>
-                    <button class="delete" aria-label="close"></button>
-                </header>
-                <section class="modal-card-body">
-                    <div class="field">
-                        <label class="label">Name</label>
-                        <div class="control">
-                            <input
-                                class="input"
-                                type="text"
-                                id="name-input"
-                                placeholder="Enter your name"
-                            />
-                        </div>
+        <!-- Profile Modal -->
+        <dialog id="profile-modal" class="modal">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg">Update Profile</h3>
+                <div class="py-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Name</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="name-input"
+                            placeholder="Enter your name"
+                            class="input input-bordered w-full"
+                        />
                     </div>
-                </section>
-                <footer class="modal-card-foot">
+                </div>
+                <div class="modal-action">
                     <button
                         aria-label="Save button"
                         id="save-profile-btn"
-                        class="button is-success"
+                        class="btn btn-success"
                     >
                         Save changes
                     </button>
-                    <button aria-label="Cancel button" class="button">
+                    <button aria-label="Cancel button" class="btn">
                         Cancel
                     </button>
-                </footer>
+                </div>
             </div>
-        </div>
+            <form method="dialog" class="modal-backdrop">
+                <button>close</button>
+            </form>
+        </dialog>
 
         <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/profxadke/yokto.js@main/yokto.min.js"></script>
         <script>
+            // $$() is yokto.js's document.ready equivalent - runs when DOM is loaded
             $$(() => {
-                // Using yokto.js vNode selectors
-                const localVideo = $("#local-video");
-                const videosContainer = $("#videos");
-                const myIdSpan = $("#my-id");
-                const peerIdInput = $("#peer-id-input");
-                const connectBtn = $("#connect-btn");
-                const hangUpBtn = $("#hang-up-btn");
-                const muteAudioBtn = $("#mute-audio-btn");
-                const muteVideoBtn = $("#mute-video-btn");
-                const shareScreenBtn = $("#share-screen-btn");
-                const resetIdBtn = $("#reset-id");
-                const peerList = $("#peer-list");
-                const callNotification = $("#call-notification");
-                const callNotificationText = $("#call-notification-text");
-                const acceptCallBtn = $("#accept-call-btn");
-                const denyCallBtn = $("#deny-call-btn");
-                const updateProfileBtn = $("#update-profile-btn");
-                const profileModal = $("#profile-modal");
-                const nameInput = $("#name-input");
-                const saveProfileBtn = $("#save-profile-btn");
-                const localVideoContainer = $("#local-video-container");
-                const localAudioMuteIcon = $("#local-audio-mute-icon");
-                const localVideoMuteIcon = $("#local-video-mute-icon");
-                const localAvatar = $("#local-avatar");
-                const localName = $("#local-name");
+                // ============================================================
+                // DOM ELEMENT REFERENCES (using yokto.js $ selector)
+                // ============================================================
 
-                let localStream;
-                let peer;
-                const calls = new Map();
-                const dataConnections = new Map();
-                let incomingCall;
-                let isScreenSharing = false;
-                let cameraStream;
-                const outgoingCallsInProgress = new Set();
-                const iceCandidateQueues = new Map();
+                const localVideo = $("#local-video"); // Local user's video element
+                const videosContainer = $("#videos"); // Container for all video elements
+                const myIdSpan = $("#my-id"); // Display element for user's peer ID
+                const peerIdInput = $("#peer-id-input"); // Input field for manually entering peer ID
+                const connectBtn = $("#connect-btn"); // Button to initiate connection
+                const hangUpBtn = $("#hang-up-btn"); // Button to hang up all calls
+                const muteAudioBtn = $("#mute-audio-btn"); // Toggle audio mute
+                const muteVideoBtn = $("#mute-video-btn"); // Toggle video mute
+                const shareScreenBtn = $("#share-screen-btn"); // Toggle screen sharing
+                const resetIdBtn = $("#reset-id"); // Generate new peer ID
+                const peerList = $("#peer-list"); // List of available peers
+                const callNotification = $("#call-notification"); // Incoming call notification popup
+                const callNotificationText = $("#call-notification-text"); // Text in notification
+                const acceptCallBtn = $("#accept-call-btn"); // Accept incoming call
+                const denyCallBtn = $("#deny-call-btn"); // Deny incoming call
+                const updateProfileBtn = $("#update-profile-btn"); // Open profile settings modal
+                const profileModal = $("#profile-modal"); // Profile settings modal
+                const nameInput = $("#name-input"); // Input for user's display name
+                const saveProfileBtn = $("#save-profile-btn"); // Save profile changes
+                const localVideoContainer = $("#local-video-container"); // Container for local video
+                const localAudioMuteIcon = $("#local-audio-mute-icon"); // Icon showing local audio is muted
+                const localVideoMuteIcon = $("#local-video-mute-icon"); // Icon showing local video is muted
+                const localAvatar = $("#local-avatar"); // User's avatar image
+                const localName = $("#local-name"); // User's display name
+
+                // ============================================================
+                // STATE VARIABLES
+                // ============================================================
+
+                let localStream; // MediaStream object containing local audio/video tracks
+                let peer; // PeerJS Peer object - represents this user in the peer network
+                const calls = new Map(); // Map<peerId, MediaConnection> - stores active media calls
+                const dataConnections = new Map(); // Map<peerId, {connection, metadata, timeoutId}> - stores data channels
+                let incomingCall; // Stores pending incoming call details: {conn, metadata, muteStatus}
+                let isScreenSharing = false; // Flag indicating if user is currently sharing screen
+                let cameraStream; // Cached camera MediaStream for switching back from screen share
+                const outgoingCallsInProgress = new Set(); // Set<peerId> - prevents accepting incoming call from peer we're calling
+                const iceCandidateQueues = new Map(); // Map<peerId, Array<RTCIceCandidate>> - queues ICE candidates received before remote description is set
+
+                // ============================================================
+                // USER METADATA
+                // ============================================================
 
                 const localMetadata = {
                     name:
-                        localStorage.getItem("userName") ||
+                        localStorage.getItem("userName") || // Retrieve saved name or generate random
                         "User" + Math.floor(Math.random() * 1000),
                     avatar_url:
-                        localStorage.getItem("userAvatarUrl") ||
+                        localStorage.getItem("userAvatarUrl") || // Retrieve saved avatar or generate random
                         `https://i.pravatar.cc/150?u=${Math.random()}`,
                     custom: {
-                        status: "Available",
+                        status: "Available", // Custom status field (extensible)
                     },
                 };
 
                 // Set initial local metadata display using yokto.js
-                localAvatar.attrs.src = localMetadata.avatar_url;
-                localName.text = localMetadata.name;
+                localAvatar.attrs.src = localMetadata.avatar_url; // Set avatar image src attribute
+                localName.text = localMetadata.name; // Set display name text
+
+                // ============================================================
+                // BLOCKED PEERS LIST (persisted in localStorage)
+                // ============================================================
 
                 let blockedPeers = new Set(
                     JSON.parse(localStorage.getItem("blockedPeers") || "[]"),
                 );
 
+                // ============================================================
+                // HELPER FUNCTIONS
+                // ============================================================
+
+                /**
+                 * Generates a random 6-digit peer ID (100000-999999)
+                 * @returns {string} 6-digit numeric ID as string
+                 */
                 function generatePeerId() {
-                    return String(Math.floor(Math.random() * 900000) + 100000);
+                    return String(Math.floor(Math.random() * 9e5) + 1e5);
                 }
 
-                // Get user media
+                // ============================================================
+                // INITIALIZATION - Request camera/microphone access
+                // ============================================================
+
+                // Request access to user's camera and microphone
                 navigator.mediaDevices
                     .getUserMedia({ video: true, audio: true })
                     .then((stream) => {
-                        localStream = stream;
-                        cameraStream = stream;
-                        localVideo.$.node.srcObject = stream;
-                        initializePeer();
+                        localStream = stream; // Store the media stream
+                        cameraStream = stream; // Cache camera stream for screen share toggle
+                        localVideo.$.node.srcObject = stream; // Display local video (yokto.js .$.node gets raw DOM element)
+                        initializePeer(); // Once media is ready, initialize PeerJS connection
                     })
                     .catch((error) => {
                         console.error("Error accessing media devices.", error);
                     });
 
+                /**
+                 * Initializes PeerJS connection with signaling server and TURN/STUN configuration
+                 * - Retrieves or generates peer ID
+                 * - Connects to PeerJS signaling server
+                 * - Configures TURN/STUN servers for NAT traversal
+                 * - Sets up event listeners for peer events
+                 */
                 function initializePeer() {
+                    // Retrieve existing peer ID from localStorage or generate new one
                     let peerId = localStorage.getItem("peerId");
                     if (!peerId) {
                         peerId = generatePeerId();
-                        localStorage.setItem("peerId", peerId);
+                        localStorage.setItem("peerId", peerId); // Persist for future sessions
                     }
+
+                    // Create PeerJS peer object
                     peer = new Peer(peerId, {
-                        host: "dev.blackstonenp.com",
-                        port: 443,
-                        path: "/app",
-                        key: "xadkeg",
+                        host: "dev.blackstonenp.com", // PeerJS signaling server hostname
+                        port: 443, // HTTPS port
+                        path: "/app", // Path on signaling server
+                        key: "xadkeg", // Authentication key for PeerJS server
                         config: {
+                            // WebRTC configuration
                             iceServers: [
                                 {
-                                    url: "stun:dev.blackstonenp.com:3478",
+                                    url: "stun:dev.blackstonenp.com:3478", // STUN server for discovering public IP
                                 },
                                 {
-                                    url: "turn:dev.blackstonenp.com:3478",
-                                    username: "xadkeg",
+                                    url: "turn:dev.blackstonenp.com:3478", // TURN server for relaying when direct connection fails
+                                    username: "xadkeg", // TURN authentication
                                     credential: "passw0rd",
                                 },
                             ],
                         },
                     });
 
+                    // ============================================================
+                    // PEER EVENT: 'open' - Successfully connected to signaling server
+                    // ============================================================
                     peer.on("open", (id) => {
-                        myIdSpan.text = `Your ID: ${id}`;
-                        updatePeerList();
-                        setInterval(updatePeerList, 10000);
-                        setInterval(checkConnectedPeers, 15000);
+                        myIdSpan.text = `Your ID: ${id}`; // Display peer ID to user
+                        updatePeerList(); // Fetch and display available peers
+                        setInterval(updatePeerList, 1e4); // Refresh peer list every 10 seconds
+                        setInterval(checkConnectedPeers, 15e3); // Check connected peers health every 15 seconds
                     });
 
+                    // ============================================================
+                    // PEER EVENT: 'call' - Incoming media connection (audio/video)
+                    // ============================================================
                     peer.on("call", (call) => {
                         console.log(
                             `peer.on('call'): Local peer ID: ${peer.id}, Incoming call peer ID: ${call.peer}`,
                         );
+
+                        // Ignore call from self (shouldn't happen but safety check)
                         if (call.peer === peer.id) {
                             console.log(
                                 `peer.on('call'): Ignoring incoming call from self (${call.peer})`,
                             );
                             return;
                         }
+
+                        // If we're already calling this peer, ignore their incoming call (race condition prevention)
                         if (outgoingCallsInProgress.has(call.peer)) {
                             console.log(
                                 `peer.on('call'): Ignoring incoming call from ${call.peer} because an outgoing call is in progress.`,
                             );
                             return;
                         }
+
                         console.log(
                             `peer.on('call'): Incoming call from ${call.peer}`,
                         );
+
+                        // Answer the call with our local media stream
                         call.answer(localStream);
-                        call.localStream = localStream;
+                        call.localStream = localStream; // Store reference to our stream
+
                         console.log(
                             `peer.on('call'): Answered call from ${call.peer}`,
                         );
@@ -448,22 +545,45 @@
                         console.log(
                             `peer.on('call'): ICE connection state after answer: ${call.peerConnection.iceConnectionState}`,
                         );
-                        handleCall(call);
+
+                        handleCall(call); // Set up video display and event handlers
                     });
 
+                    // ============================================================
+                    // PEER EVENT: 'connection' - Incoming data connection
+                    // ============================================================
                     peer.on("connection", (conn) => {
-                        handleDataConnection(conn);
+                        handleDataConnection(conn); // Set up data channel for signaling
                     });
 
+                    // ============================================================
+                    // PEER EVENT: 'error' - PeerJS error occurred
+                    // ============================================================
                     peer.on("error", (err) => {
                         console.error("PeerJS error:", err);
                     });
                 }
 
+                /**
+                 * Handles an active media call (incoming or outgoing)
+                 * - Creates video UI element using yokto.js
+                 * - Sets up remote stream display
+                 * - Handles ICE candidate exchange
+                 * - Manages call lifecycle events
+                 *
+                 * @param {MediaConnection} call - PeerJS MediaConnection object
+                 */
                 function handleCall(call) {
+                    // Only process if this is a new call (not already in calls Map)
                     if (!calls.has(call.peer)) {
+                        // ============================================================
+                        // ICE CANDIDATE QUEUE PROCESSING
+                        // ICE candidates may arrive before remote description is set
+                        // Queue them and process when remote description is ready
+                        // ============================================================
                         const processQueuedCandidates = async () => {
                             const queue = iceCandidateQueues.get(call.peer);
+                            // Only process if remote description is set and queue exists
                             if (
                                 call.peerConnection.remoteDescription &&
                                 queue
@@ -471,6 +591,7 @@
                                 console.log(
                                     `handleCall: Processing ${queue.length} queued ICE candidates for ${call.peer}.`,
                                 );
+                                // Process all queued candidates
                                 while (queue.length > 0) {
                                     const candidate = queue.shift();
                                     try {
@@ -486,93 +607,116 @@
                                 }
                             }
                         };
-                        processQueuedCandidates();
+                        processQueuedCandidates(); // Process any candidates that arrived early
+                        // Re-process if signaling state changes (e.g., remote description set)
                         call.peerConnection.addEventListener(
                             "signalingstatechange",
                             processQueuedCandidates,
                         );
 
-                        // Create video container using yokto.js vNodes
+                        // ============================================================
+                        // BUILD VIDEO UI USING YOKTO.JS VNODES
+                        // $v() creates virtual DOM nodes
+                        // ============================================================
+
+                        // Outer column wrapper (no wrapper needed, will be direct child of grid)
                         const videoColumn = $v("div", {
-                            class: "column is-half",
-                        });
-                        const videoBox = $v("div", {
-                            class: "box video-container",
-                            "data-peer-id": call.peer,
+                            class: "", // Empty, the parent is already a grid
                         });
 
-                        const remoteVideo = $v("video", {
-                            autoplay: "true",
-                            style: "max-height: 100%; max-width: 100%; border-radius: 6px; pointer-events: none;",
+                        // Video container card with peer ID for identification
+                        const videoBox = $v("div", {
+                            class: "card bg-base-100 shadow-xl video-container",
+                            "data-peer-id": call.peer, // Store peer ID for later reference
                         });
+
+                        // Remote video element
+                        const remoteVideo = $v("video", {
+                            autoplay: "true", // Auto-play when stream arrives
+                            class: "rounded-2xl w-full",
+                            style: "pointer-events: none;",
+                        });
+                        // Prevent video from being paused
                         remoteVideo._.on("pause", (e) => {
                             e.preventDefault();
                         });
 
+                        // Status icons container (shows mute status)
                         const statusIcons = $v(
                             "div",
                             { class: "status-icons" },
                             [
                                 $v("i", {
-                                    class: "fas fa-microphone-slash",
-                                    style: "display: none;",
+                                    class: "fas fa-microphone-slash", // Audio muted icon
+                                    style: "display: none;", // Hidden by default
                                 }),
                                 $v("i", {
-                                    class: "fas fa-video-slash",
-                                    style: "display: none;",
+                                    class: "fas fa-video-slash", // Video muted icon
+                                    style: "display: none;", // Hidden by default
                                 }),
                             ],
                         );
 
+                        // Retrieve peer metadata (name, avatar) from data connection
                         const metadata = dataConnections.get(
                             call.peer,
                         )?.metadata;
                         const infoChildren = [];
                         if (metadata) {
                             infoChildren.push(
-                                $v("img", { src: metadata.avatar_url }),
+                                $v("img", { src: metadata.avatar_url }), // Avatar image
                             );
-                            infoChildren.push($v("span", {}, metadata.name));
+                            infoChildren.push($v("span", {}, metadata.name)); // Display name
                         }
+                        // Info overlay showing peer identity
                         const info = $v("div", { class: "info" }, infoChildren);
 
+                        // ============================================================
+                        // CONTROL BUTTONS (hang up, block, fullscreen)
+                        // ============================================================
+
+                        // Hang up button (disconnect from this peer)
                         const hangUpBtn = $v(
-                            "a",
+                            "button",
                             {
-                                class: "button is-danger is-small hang-up-btn",
+                                class: "btn btn-error btn-sm hang-up-btn",
                             },
                             $v("i", { class: "fas fa-phone-slash" }),
                         );
-                        hangUpBtn._.on("click", () => hangUpPeer(call.peer));
+                        hangUpBtn._.on("click", () => hangUpPeer(call.peer)); // Disconnect this peer
 
+                        // Block button (currently disabled)
                         const blockBtn = $v(
-                            "a",
+                            "button",
                             {
-                                class: "button is-warning is-small block-btn",
-                                disabled: "disabled",
+                                class: "btn btn-warning btn-sm block-btn",
+                                disabled: "disabled", // Not fully implemented
                             },
                             $v("i", { class: "fas fa-trash" }),
                         );
-                        blockBtn._.on("click", () => blockPeer(call.peer));
+                        blockBtn._.on("click", () => blockPeer(call.peer)); // Add peer to block list
 
+                        // Fullscreen function - handles browser compatibility
                         const toFullScr = () => {
-                            const video = remoteVideo.$.node;
+                            const video = remoteVideo.$.node; // Get raw DOM node
                             if (video.requestFullscreen)
-                                video.requestFullscreen();
+                                video.requestFullscreen(); // Standard
                             else if (video.webkitRequestFullscreen)
-                                video.webkitRequestFullscreen();
+                                video.webkitRequestFullscreen(); // Safari
                             else if (video.msRequestFullScreen)
-                                video.msRequestFullScreen();
-                            else fullScrBtn._.remove();
+                                video.msRequestFullScreen(); // IE/Edge
+                            else fullScrBtn._.remove(); // Fullscreen not supported, remove button
                         };
+
+                        // Fullscreen button
                         const fullScrIco = $v("i", { class: "fas fa-expand" });
                         fullScrIco._.on("click", () => {
                             toFullScr();
                         });
                         const fullScrBtn = $v(
-                            "a",
+                            "button",
                             {
-                                class: "button is-info is-small full-scr-btn",
+                                class: "btn btn-info btn-sm full-scr-btn",
                             },
                             fullScrIco,
                         );
@@ -580,7 +724,11 @@
                             toFullScr();
                         });
 
-                        // Assemble the video box using yokto.js mounting
+                        // ============================================================
+                        // ASSEMBLE AND MOUNT VIDEO UI
+                        // ._.append() adds child to vNode
+                        // _(child, parent) mounts child into parent
+                        // ============================================================
                         videoBox._.append(remoteVideo);
                         videoBox._.append(fullScrBtn);
                         videoBox._.append(statusIcons);
@@ -588,18 +736,22 @@
                         videoBox._.append(hangUpBtn);
                         videoBox._.append(blockBtn);
                         videoColumn._.append(videoBox);
-                        _(videoColumn, videosContainer);
+                        _(videoColumn, videosContainer); // Mount to main videos container
 
-                        // Listen for stream changes directly on the RTCPeerConnection
+                        // ============================================================
+                        // WEBRTC STREAM HANDLING
+                        // ============================================================
+
+                        // Listen for media tracks (more reliable than PeerJS 'stream' event)
                         call.peerConnection.ontrack = (event) => {
                             console.log(
                                 `handleCall: RTCPeerConnection ontrack event for ${call.peer}`,
                                 event,
                             );
-                            const remoteStream = event.streams[0];
+                            const remoteStream = event.streams[0]; // Get remote peer's media stream
                             if (remoteStream) {
-                                remoteVideo.$.node.srcObject = remoteStream;
-                                call.remoteStream = remoteStream;
+                                remoteVideo.$.node.srcObject = remoteStream; // Display remote video
+                                call.remoteStream = remoteStream; // Store reference
                                 console.log(
                                     `handleCall: remoteVideo.srcObject updated via ontrack for ${call.peer}`,
                                 );
@@ -610,9 +762,13 @@
                             }
                         };
 
-                        // Handle ICE candidates for the initial call setup
+                        // ============================================================
+                        // ICE CANDIDATE EXCHANGE
+                        // Send our ICE candidates to remote peer via data channel
+                        // ============================================================
                         call.peerConnection.onicecandidate = (event) => {
                             if (event.candidate) {
+                                // Send ICE candidate to peer via data connection
                                 dataConnections
                                     .get(call.peer)
                                     ?.connection.send({
@@ -625,38 +781,62 @@
                             }
                         };
 
+                        // ============================================================
+                        // PEERJS CALL EVENT HANDLERS
+                        // ============================================================
+
+                        // 'stream' event - backup handler (ontrack is more reliable)
                         call.on("stream", (remoteStream) => {
                             console.log(
                                 `handleCall: Stream received for ${call.peer}`,
                             );
                             remoteVideo.$.node.srcObject = remoteStream;
                             call.remoteStream = remoteStream;
-                            outgoingCallsInProgress.delete(call.peer);
+                            outgoingCallsInProgress.delete(call.peer); // Call established, remove from outgoing set
                         });
 
+                        // 'close' event - cleanup when call ends
                         call.on("close", () => {
                             console.log(
                                 `handleCall: Call closed for ${call.peer}`,
                             );
-                            videoColumn._.remove();
-                            calls.delete(call.peer);
+                            videoColumn._.remove(); // Remove video UI
+                            calls.delete(call.peer); // Remove from active calls
                         });
 
+                        // Store call in active calls map
                         calls.set(call.peer, call);
                     }
                 }
 
+                /**
+                 * Handles data connection for signaling (not media)
+                 * Data connections are used to exchange:
+                 * - Call requests/acceptance/denial
+                 * - Mute status updates
+                 * - ICE candidates
+                 * - Hang up notifications
+                 *
+                 * @param {DataConnection} conn - PeerJS DataConnection object
+                 */
                 function handleDataConnection(conn) {
+                    // Reject connections from blocked peers
                     if (blockedPeers.has(conn.peer)) {
                         conn.on("open", () => conn.close());
                         return;
                     }
 
+                    // ============================================================
+                    // DATA MESSAGE HANDLER - processes signaling messages
+                    // ============================================================
                     conn.on("data", async (data) => {
                         const dataConn = dataConnections.get(conn.peer);
 
+                        // Switch on message type
                         switch (data.type) {
                             case "call-request": {
+                                // Remote peer wants to call us
+                                // Show notification with accept/deny buttons
                                 showCallNotification(conn, data.metadata, {
                                     audioMuted: data.audioMuted,
                                     videoMuted: data.videoMuted,
@@ -664,16 +844,18 @@
                                 break;
                             }
                             case "call-accepted": {
+                                // Remote peer accepted our call request
+                                // Clear timeout and initiate media connection
                                 if (dataConn?.timeoutId) {
-                                    clearTimeout(dataConn.timeoutId);
+                                    clearTimeout(dataConn.timeoutId); // Clear 30s timeout
                                 }
-                                handleCallAccepted(conn, data.metadata);
+                                handleCallAccepted(conn, data.metadata); // Store metadata
                                 const mediaCall = peer.call(
                                     conn.peer,
-                                    localStream,
+                                    localStream, // Start media call with our stream
                                 );
-                                outgoingCallsInProgress.add(conn.peer);
-                                handleCall(mediaCall);
+                                outgoingCallsInProgress.add(conn.peer); // Mark as outgoing call
+                                handleCall(mediaCall); // Set up video UI and handlers
                                 updateMuteStatus(conn.peer, {
                                     audioMuted: data.audioMuted,
                                     videoMuted: data.videoMuted,
@@ -681,6 +863,7 @@
                                 break;
                             }
                             case "call-denied": {
+                                // Remote peer denied our call request
                                 if (dataConn?.timeoutId) {
                                     clearTimeout(dataConn.timeoutId);
                                 }
@@ -689,16 +872,23 @@
                                 break;
                             }
                             case "hang-up": {
+                                // Remote peer hung up
                                 const call = calls.get(conn.peer);
-                                if (call) call.close();
-                                conn.close();
+                                if (call) call.close(); // Close media connection
+                                conn.close(); // Close data connection
                                 break;
                             }
                             case "mute-status": {
+                                // Remote peer changed their mute status
+                                console.log(
+                                    `handleDataConnection: Received mute-status from ${conn.peer}`,
+                                    data,
+                                );
                                 updateMuteStatus(conn.peer, data);
                                 break;
                             }
                             case "ice-candidate": {
+                                // Received ICE candidate from remote peer
                                 console.log(
                                     `handleDataConnection: Received ICE candidate from ${conn.peer}.`,
                                 );
@@ -707,6 +897,7 @@
                                     data.candidate,
                                 );
 
+                                // Only add if remote description is already set
                                 if (
                                     call &&
                                     call.peerConnection &&
@@ -723,6 +914,7 @@
                                         );
                                     }
                                 } else {
+                                    // Queue candidate if remote description not ready yet
                                     if (!iceCandidateQueues.has(conn.peer)) {
                                         iceCandidateQueues.set(conn.peer, []);
                                     }
@@ -738,7 +930,11 @@
                         }
                     });
 
+                    // ============================================================
+                    // DATA CONNECTION CLOSE HANDLER
+                    // ============================================================
                     conn.on("close", () => {
+                        // Hide notification if it was from this peer
                         if (
                             incomingCall &&
                             incomingCall.conn.peer === conn.peer
@@ -746,18 +942,30 @@
                             callNotification._.css({ display: "none" });
                             incomingCall = null;
                         }
-                        dataConnections.delete(conn.peer);
+                        dataConnections.delete(conn.peer); // Remove from data connections
                         const call = calls.get(conn.peer);
-                        if (call) call.close();
+                        if (call) call.close(); // Close associated media call
                     });
                 }
 
+                /**
+                 * Shows incoming call notification popup
+                 * @param {DataConnection} conn - Data connection from caller
+                 * @param {Object} metadata - Caller's metadata (name, avatar)
+                 * @param {Object} muteStatus - Caller's mute status
+                 */
                 function showCallNotification(conn, metadata, muteStatus) {
-                    incomingCall = { conn, metadata, muteStatus };
+                    incomingCall = { conn, metadata, muteStatus }; // Store for accept/deny handlers
                     callNotificationText.text = `Incoming call from ${metadata.name}`;
-                    callNotification._.css({ display: "block" });
+                    callNotification._.css({ display: "block" }); // Show notification
                 }
 
+                /**
+                 * Handles successful call acceptance
+                 * Stores connection and metadata in dataConnections map
+                 * @param {DataConnection} conn - Data connection
+                 * @param {Object} metadata - Remote peer's metadata
+                 */
                 function handleCallAccepted(conn, metadata) {
                     dataConnections.set(conn.peer, {
                         connection: conn,
@@ -765,101 +973,150 @@
                     });
                 }
 
+                /**
+                 * Updates mute status icons for a remote peer
+                 * Shows/hides audio/video mute icons based on peer's status
+                 * @param {string} peerId - Peer ID to update
+                 * @param {Object} data - {audioMuted, videoMuted}
+                 */
                 function updateMuteStatus(peerId, data) {
-                    const videoContainer = $(
+                    console.log(
+                        `updateMuteStatus: Updating mute status for ${peerId}`,
+                        data,
+                    );
+
+                    // Find the video container for this peer using direct DOM query
+                    const videoContainer = document.querySelector(
                         `.video-container[data-peer-id="${peerId}"]`,
                     );
+
                     if (videoContainer) {
-                        const icons = videoContainer.children;
-                        let audioIcon, videoIcon;
+                        console.log(
+                            `updateMuteStatus: Found video container for ${peerId}`,
+                        );
 
-                        icons.each((child) => {
-                            if (
-                                child.tag === "div" &&
-                                child.attrs.class === "status-icons"
-                            ) {
-                                const statusChildren = child.children;
-                                statusChildren.each((icon) => {
-                                    if (
-                                        icon.attrs &&
-                                        icon.attrs.class &&
-                                        icon.attrs.class.includes(
-                                            "fa-microphone-slash",
-                                        )
-                                    ) {
-                                        audioIcon = icon;
-                                    }
-                                    if (
-                                        icon.attrs &&
-                                        icon.attrs.class &&
-                                        icon.attrs.class.includes(
-                                            "fa-video-slash",
-                                        )
-                                    ) {
-                                        videoIcon = icon;
-                                    }
-                                });
+                        // Find the status icons container
+                        const statusIconsDiv =
+                            videoContainer.querySelector(".status-icons");
+
+                        if (statusIconsDiv) {
+                            // Find audio and video mute icons
+                            const audioIcon = statusIconsDiv.querySelector(
+                                ".fa-microphone-slash",
+                            );
+                            const videoIcon =
+                                statusIconsDiv.querySelector(".fa-video-slash");
+
+                            // Show/hide icons based on mute status
+                            if (audioIcon) {
+                                audioIcon.style.display = data.audioMuted
+                                    ? "inline-block"
+                                    : "none";
+                                console.log(
+                                    `updateMuteStatus: Set audio icon display to ${data.audioMuted ? "inline-block" : "none"}`,
+                                );
+                            } else {
+                                console.warn(
+                                    `updateMuteStatus: Audio icon not found for ${peerId}`,
+                                );
                             }
-                        });
 
-                        if (audioIcon)
-                            audioIcon._.css({
-                                display: data.audioMuted
+                            if (videoIcon) {
+                                videoIcon.style.display = data.videoMuted
                                     ? "inline-block"
-                                    : "none",
-                            });
-                        if (videoIcon)
-                            videoIcon._.css({
-                                display: data.videoMuted
-                                    ? "inline-block"
-                                    : "none",
-                            });
+                                    : "none";
+                                console.log(
+                                    `updateMuteStatus: Set video icon display to ${data.videoMuted ? "inline-block" : "none"}`,
+                                );
+                            } else {
+                                console.warn(
+                                    `updateMuteStatus: Video icon not found for ${peerId}`,
+                                );
+                            }
+                        } else {
+                            console.warn(
+                                `updateMuteStatus: Status icons div not found for ${peerId}`,
+                            );
+                        }
 
                         // Explicitly re-assign srcObject to force a re-render
+                        // This ensures video displays correctly after mute status change
                         const remoteVideo =
-                            videoContainer.$.node.querySelector("video");
+                            videoContainer.querySelector("video");
                         const call = calls.get(peerId);
                         if (remoteVideo && call && call.remoteStream) {
                             remoteVideo.srcObject = call.remoteStream;
                         }
+                    } else {
+                        console.warn(
+                            `updateMuteStatus: Video container not found for ${peerId}`,
+                        );
                     }
                 }
 
+                /**
+                 * Blocks a peer permanently
+                 * - Adds to blockedPeers set
+                 * - Persists to localStorage
+                 * - Closes active connections
+                 * - Removes from peer list
+                 *
+                 * @param {string} peerId - Peer ID to block
+                 */
                 function blockPeer(peerId) {
-                    blockedPeers.add(peerId);
+                    blockedPeers.add(peerId); // Add to blocked set
                     localStorage.setItem(
                         "blockedPeers",
-                        JSON.stringify([...blockedPeers]),
+                        JSON.stringify([...blockedPeers]), // Persist to localStorage
                     );
                     const call = calls.get(peerId);
-                    if (call) call.close();
+                    if (call) call.close(); // Close media call
                     const conn = dataConnections.get(peerId);
-                    if (conn) conn.connection.close();
-                    updatePeerList();
+                    if (conn) conn.connection.close(); // Close data connection
+                    updatePeerList(); // Refresh peer list (blocked peers won't show)
                 }
 
+                /**
+                 * Hangs up on a specific peer (without blocking)
+                 * - Closes media connection
+                 * - Sends hang-up notification to peer
+                 * - Closes data connection
+                 *
+                 * @param {string} peerId - Peer ID to hang up on
+                 */
                 function hangUpPeer(peerId) {
                     const call = calls.get(peerId);
                     if (call) {
-                        call.close();
+                        call.close(); // Close media connection
                     }
                     const conn = dataConnections.get(peerId);
                     if (conn && conn.connection) {
-                        conn.connection.send({ type: "hang-up" });
-                        conn.connection.close();
+                        conn.connection.send({ type: "hang-up" }); // Notify peer we're hanging up
+                        conn.connection.close(); // Close data connection
                     }
                 }
 
+                /**
+                 * Replaces the local video track (used for screen sharing toggle)
+                 * - Replaces video track in all active calls using RTCRtpSender.replaceTrack()
+                 * - Stops old video track
+                 * - Updates local stream and video display
+                 *
+                 * @param {MediaStreamTrack} newVideoTrack - New video track (camera or screen)
+                 */
                 async function replaceLocalVideoStream(newVideoTrack) {
                     console.log(
                         "replaceLocalVideoStream: Replacing video track.",
                     );
 
+                    // Replace video track in all active peer connections
                     for (const call of calls.values()) {
+                        // Find the video sender in this peer connection
                         const sender = call.peerConnection
                             .getSenders()
                             .find((s) => s.track && s.track.kind === "video");
                         if (sender) {
+                            // Replace the track without renegotiation (seamless switch)
                             await sender.replaceTrack(newVideoTrack);
                             console.log(
                                 `replaceLocalVideoStream: Replaced track for peer ${call.peer}.`,
@@ -871,40 +1128,61 @@
                         }
                     }
 
+                    // Stop the old video track to release camera/screen
                     const oldVideoTrack = localStream.getVideoTracks()[0];
                     if (oldVideoTrack) {
                         oldVideoTrack.stop();
                     }
 
+                    // Create new local stream with audio + new video track
                     const audioTrack = localStream.getAudioTracks()[0];
                     localStream = new MediaStream([audioTrack, newVideoTrack]);
 
+                    // Update local video display
                     localVideo.$.node.srcObject = localStream;
                 }
 
+                /**
+                 * Fetches and displays list of available peers
+                 * - Queries PeerJS server for all connected peers
+                 * - Filters out self and blocked peers
+                 * - Creates clickable list items using yokto.js
+                 */
                 function updatePeerList() {
                     peer.listAllPeers((peers) => {
-                        peerList.text = "";
+                        peerList.text = ""; // Clear existing list
                         peers.forEach((p) => {
+                            // Don't show self or blocked peers
                             if (p !== peer.id && !blockedPeers.has(p)) {
+                                // Create clickable peer list item (DaisyUI button style)
                                 const peerItem = $v(
-                                    "a",
-                                    { class: "panel-block" },
-                                    p,
+                                    "button",
+                                    {
+                                        class: "btn btn-ghost justify-start w-full text-primary-content",
+                                    },
+                                    p, // Display peer ID
                                 );
+                                // Click to auto-fill and connect
                                 peerItem._.on("click", () => {
                                     peerIdInput.$.node.value = p;
                                     connectBtn.$.node.click();
                                 });
-                                _(peerItem, peerList);
+                                _(peerItem, peerList); // Mount to peer list
                             }
                         });
                     });
                 }
 
+                /**
+                 * Health check for connected peers
+                 * Closes calls to peers that are no longer online
+                 * Called every 15 seconds
+                 */
                 function checkConnectedPeers() {
                     peer.listAllPeers((peers) => {
+                        // Check each active call
                         for (const [peerId, call] of calls.entries()) {
+                            // If peer is no longer in the network, close the call
                             if (!peers.includes(peerId)) {
                                 call.close();
                             }
@@ -912,20 +1190,32 @@
                     });
                 }
 
+                /**
+                 * Initiates a call to a peer
+                 * - Creates data connection to peer
+                 * - Sends call-request with metadata
+                 * - Sets 30-second timeout for response
+                 * Called when user clicks Connect button or clicks peer in list
+                 */
                 function handleConnect() {
                     const peerId = peerIdInput.$.node.value.trim();
+                    // Validate: peer ID exists, not calling self, not already connected
                     if (peerId && peerId !== peer.id && !calls.has(peerId)) {
-                        const conn = peer.connect(peerId);
+                        const conn = peer.connect(peerId); // Create data connection
+
+                        // Set 30-second timeout for call acceptance
                         const timeoutId = setTimeout(() => {
                             alert(`No answer from ${peerId}`);
                             conn.close();
-                        }, 30000);
+                        }, 3e4); // 30 seconds = 30000ms
 
+                        // When data connection opens, send call request
                         conn.on("open", () => {
                             dataConnections.set(peerId, {
                                 connection: conn,
-                                timeoutId,
+                                timeoutId, // Store timeout ID to clear if accepted
                             });
+                            // Send call-request message with our metadata and mute status
                             conn.send({
                                 type: "call-request",
                                 metadata: localMetadata,
@@ -935,13 +1225,26 @@
                                     !localStream.getVideoTracks()[0].enabled,
                             });
                         });
-                        handleDataConnection(conn);
+                        handleDataConnection(conn); // Set up data message handlers
                     }
-                    peerIdInput.$.node.value = "";
+                    peerIdInput.$.node.value = ""; // Clear input field
                 }
 
+                // ============================================================
+                // EVENT HANDLERS - Accept/Deny Call
+                // ============================================================
+
+                /**
+                 * ACCEPT CALL BUTTON
+                 * - Sends 'call-accepted' message with our metadata
+                 * - Stores connection and caller's metadata
+                 * - Updates caller's mute status icons
+                 * - Hides notification
+                 * - Caller will then initiate media connection
+                 */
                 acceptCallBtn._.on("click", () => {
                     if (incomingCall) {
+                        // Send acceptance message with our metadata and mute status
                         incomingCall.conn.send({
                             type: "call-accepted",
                             metadata: localMetadata,
@@ -950,125 +1253,199 @@
                             videoMuted:
                                 !localStream.getVideoTracks()[0].enabled,
                         });
+                        // Store data connection and caller's metadata
                         dataConnections.set(incomingCall.conn.peer, {
                             connection: incomingCall.conn,
                             metadata: incomingCall.metadata,
                         });
 
+                        // Update UI to show caller's mute status
                         updateMuteStatus(
                             incomingCall.conn.peer,
                             incomingCall.muteStatus,
                         );
 
-                        callNotification._.css({ display: "none" });
-                        incomingCall = null;
+                        callNotification._.css({ display: "none" }); // Hide notification
+                        incomingCall = null; // Clear pending call
                     }
                 });
 
+                /**
+                 * DENY CALL BUTTON
+                 * - Sends 'call-denied' message
+                 * - Closes connection
+                 * - Hides notification
+                 */
                 denyCallBtn._.on("click", () => {
                     if (incomingCall) {
-                        incomingCall.conn.send({ type: "call-denied" });
-                        incomingCall.conn.close();
-                        callNotification._.css({ display: "none" });
-                        incomingCall = null;
+                        incomingCall.conn.send({ type: "call-denied" }); // Notify caller
+                        incomingCall.conn.close(); // Close data connection
+                        callNotification._.css({ display: "none" }); // Hide notification
+                        incomingCall = null; // Clear pending call
                     }
                 });
 
+                // ============================================================
+                // EVENT HANDLERS - Connection Controls
+                // ============================================================
+
+                /**
+                 * PEER ID INPUT - Enter key triggers connect
+                 */
                 peerIdInput._.on("keyup", (event) => {
                     if (event.key === "Enter") handleConnect();
                 });
 
+                /**
+                 * CONNECT BUTTON - Initiates call to entered peer ID
+                 */
                 connectBtn._.on("click", handleConnect);
 
+                /**
+                 * HANG UP ALL BUTTON - Disconnects from all peers
+                 * - Sends hang-up message to all connected peers
+                 * - Peers will close connections on their end
+                 */
                 hangUpBtn._.on("click", () => {
                     for (const [
                         peerId,
                         dataConn,
                     ] of dataConnections.entries()) {
                         if (dataConn.connection) {
-                            dataConn.connection.send({ type: "hang-up" });
+                            dataConn.connection.send({ type: "hang-up" }); // Notify peer
                         }
                     }
                 });
 
+                // ============================================================
+                // EVENT HANDLERS - Media Controls
+                // ============================================================
+
+                /**
+                 * MUTE AUDIO BUTTON
+                 * - Toggles audio track enabled state
+                 * - Updates button icon
+                 * - Shows/hides local mute icon
+                 * - Notifies all peers of mute status change
+                 */
                 muteAudioBtn._.on("click", () => {
                     const audioTrack = localStream.getAudioTracks()[0];
-                    audioTrack.enabled = !audioTrack.enabled;
+                    audioTrack.enabled = !audioTrack.enabled; // Toggle audio
+
+                    // Update button icon based on state
                     const icon = audioTrack.enabled
-                        ? '<i class="fas fa-microphone"></i>'
-                        : '<i class="fas fa-microphone-slash"></i>';
+                        ? '<i class="fas fa-microphone"></i>' // Unmuted
+                        : '<i class="fas fa-microphone-slash"></i>'; // Muted
                     muteAudioBtn.$.node.innerHTML = icon;
+
+                    // Show/hide local mute indicator
                     localAudioMuteIcon._.css({
                         display: audioTrack.enabled ? "none" : "inline-block",
                     });
+
+                    // Notify all connected peers of mute status change
+                    const muteStatusMessage = {
+                        type: "mute-status",
+                        audioMuted: !audioTrack.enabled,
+                        videoMuted: !localStream.getVideoTracks()[0].enabled,
+                    };
+                    console.log(
+                        "Sending mute-status to all peers:",
+                        muteStatusMessage,
+                    );
                     for (const [
                         peerId,
                         dataConn,
                     ] of dataConnections.entries()) {
                         if (dataConn.connection) {
-                            dataConn.connection.send({
-                                type: "mute-status",
-                                audioMuted: !audioTrack.enabled,
-                                videoMuted:
-                                    !localStream.getVideoTracks()[0].enabled,
-                            });
+                            dataConn.connection.send(muteStatusMessage);
+                            console.log(`Sent mute-status to ${peerId}`);
                         }
                     }
                 });
 
+                /**
+                 * MUTE VIDEO BUTTON
+                 * - Toggles video track enabled state (black screen when disabled)
+                 * - Updates button icon
+                 * - Shows/hides local mute icon
+                 * - Notifies all peers of mute status change
+                 */
                 muteVideoBtn._.on("click", () => {
                     const videoTrack = localStream.getVideoTracks()[0];
-                    videoTrack.enabled = !videoTrack.enabled;
+                    videoTrack.enabled = !videoTrack.enabled; // Toggle video
+
+                    // Update button icon based on state
                     const icon = videoTrack.enabled
-                        ? '<i class="fas fa-video"></i>'
-                        : '<i class="fas fa-video-slash"></i>';
+                        ? '<i class="fas fa-video"></i>' // Video on
+                        : '<i class="fas fa-video-slash"></i>'; // Video off
                     muteVideoBtn.$.node.innerHTML = icon;
+
+                    // Show/hide local mute indicator
                     localVideoMuteIcon._.css({
                         display: videoTrack.enabled ? "none" : "inline-block",
                     });
+
+                    // Notify all connected peers of mute status change
+                    const muteStatusMessage = {
+                        type: "mute-status",
+                        audioMuted: !localStream.getAudioTracks()[0].enabled,
+                        videoMuted: !videoTrack.enabled,
+                    };
+                    console.log(
+                        "Sending mute-status to all peers:",
+                        muteStatusMessage,
+                    );
                     for (const [
                         peerId,
                         dataConn,
                     ] of dataConnections.entries()) {
                         if (dataConn.connection) {
-                            dataConn.connection.send({
-                                type: "mute-status",
-                                audioMuted:
-                                    !localStream.getAudioTracks()[0].enabled,
-                                videoMuted: !videoTrack.enabled,
-                            });
+                            dataConn.connection.send(muteStatusMessage);
+                            console.log(`Sent mute-status to ${peerId}`);
                         }
                     }
                 });
 
+                /**
+                 * SCREEN SHARE BUTTON
+                 * - Toggles between camera and screen sharing
+                 * - Replaces video track in all active calls
+                 * - Auto-stops if user clicks "Stop sharing" in browser
+                 */
                 shareScreenBtn._.on("click", async () => {
                     if (isScreenSharing) {
+                        // Switch back to camera
                         const newCameraStream =
                             await navigator.mediaDevices.getUserMedia({
-                                video: true,
+                                video: true, // Request camera again
                             });
                         const newCameraVideoTrack =
                             newCameraStream.getVideoTracks()[0];
                         await replaceLocalVideoStream(newCameraVideoTrack);
                         isScreenSharing = false;
+                        // Update button icon to "start screen share"
                         shareScreenBtn.$.node.innerHTML =
                             '<i class="fas fa-desktop"></i>';
                     } else {
+                        // Switch to screen share
                         try {
                             const screenStream =
                                 await navigator.mediaDevices.getDisplayMedia({
-                                    video: true,
+                                    video: true, // Request screen capture
                                 });
                             const screenVideoTrack =
                                 screenStream.getVideoTracks()[0];
                             await replaceLocalVideoStream(screenVideoTrack);
                             isScreenSharing = true;
+                            // Update button icon to "stop screen share"
                             shareScreenBtn.$.node.innerHTML =
                                 '<i class="fas fa-stop-circle"></i>';
 
+                            // Auto-stop screen sharing if user clicks "Stop sharing" in browser
                             screenVideoTrack.onended = () => {
                                 if (isScreenSharing) {
-                                    shareScreenBtn.$.node.click();
+                                    shareScreenBtn.$.node.click(); // Trigger switch back to camera
                                 }
                             };
                         } catch (error) {
@@ -1077,51 +1454,66 @@
                     }
                 });
 
+                /**
+                 * RESET ID BUTTON
+                 * - Destroys current peer connection
+                 * - Generates new random peer ID
+                 * - Re-initializes peer with new ID
+                 */
                 resetIdBtn._.on("click", () => {
-                    peer.destroy();
-                    let peerId = generatePeerId();
-                    localStorage.setItem("peerId", peerId);
-                    initializePeer();
+                    peer.destroy(); // Disconnect from PeerJS server
+                    let peerId = generatePeerId(); // Generate new ID
+                    localStorage.setItem("peerId", peerId); // Save new ID
+                    initializePeer(); // Reconnect with new ID
                 });
 
+                // ============================================================
+                // EVENT HANDLERS - Profile Settings Modal (DaisyUI Dialog)
+                // ============================================================
+
+                /**
+                 * UPDATE PROFILE BUTTON
+                 * Opens modal to edit display name
+                 */
                 updateProfileBtn._.on("click", () => {
-                    profileModal._.addClasses("is-active");
-                    nameInput.$.node.value = localMetadata.name;
+                    profileModal.$.node.showModal(); // Show modal (DaisyUI dialog method)
+                    nameInput.$.node.value = localMetadata.name; // Pre-fill current name
                 });
 
-                const modalBg =
-                    profileModal.$.node.querySelector(".modal-background");
-                const modalDelete =
-                    profileModal.$.node.querySelector(".delete");
+                // Get modal control elements
                 const modalCancel = profileModal.$.node.querySelector(
-                    ".button:not(.is-success)",
+                    ".btn:not(.btn-success)",
                 );
 
-                modalBg.addEventListener("click", () => {
-                    profileModal._.removeClasses("is-active");
-                });
-
-                modalDelete.addEventListener("click", () => {
-                    profileModal._.removeClasses("is-active");
-                });
-
+                // Click Cancel to close modal
                 modalCancel.addEventListener("click", () => {
-                    profileModal._.removeClasses("is-active");
+                    profileModal.$.node.close(); // Close dialog
                 });
 
+                /**
+                 * SAVE PROFILE BUTTON
+                 * - Updates local metadata with new name
+                 * - Generates new random avatar
+                 * - Saves to localStorage
+                 * - Updates display
+                 */
                 saveProfileBtn._.on("click", () => {
                     const newName = nameInput.$.node.value.trim();
                     if (newName) {
-                        localMetadata.name = newName;
-                        localStorage.setItem("userName", newName);
+                        localMetadata.name = newName; // Update metadata
+                        localStorage.setItem("userName", newName); // Persist
+
+                        // Generate new random avatar
                         localMetadata.avatar_url = `https://i.pravatar.cc/150?u=${Math.random()}`;
                         localStorage.setItem(
                             "userAvatarUrl",
                             localMetadata.avatar_url,
                         );
+
+                        // Update UI
                         localAvatar.attrs.src = localMetadata.avatar_url;
                         localName.text = localMetadata.name;
-                        profileModal._.removeClasses("is-active");
+                        profileModal.$.node.close(); // Close dialog
                     }
                 });
             });
