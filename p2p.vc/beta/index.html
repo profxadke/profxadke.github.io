@@ -126,7 +126,6 @@
             <div class="flex flex-col lg:flex-row gap-6">
                 <!-- Sidebar -->
                 <div class="w-full lg:w-1/4 space-y-4">
-
                     <!-- Connect Box (Hidden) -->
                     <div
                         class="card bg-base-100 shadow-xl"
@@ -354,7 +353,9 @@
                             class="input input-bordered w-full"
                         />
                         <label class="label">
-                            <span class="label-text-alt text-base-content/60">Enter a direct image URL (optional)</span>
+                            <span class="label-text-alt text-base-content/60"
+                                >Enter a direct image URL (optional)</span
+                            >
                         </label>
                     </div>
                 </div>
@@ -1706,7 +1707,8 @@
                             console.error("Error sharing screen:", error);
                             // If screen sharing fails, reset state
                             isScreenSharing = false;
-                            shareScreenBtn.$.node.innerHTML = '<i class="fas fa-desktop"></i>';
+                            shareScreenBtn.$.node.innerHTML =
+                                '<i class="fas fa-desktop"></i>';
                         }
                     }
                 });
@@ -1751,10 +1753,12 @@
                 // Check for screen sharing capability and conditionally show/hide button
                 if (!navigator.mediaDevices.getDisplayMedia) {
                     // Screen sharing not supported - remove the button
-                    shareScreenBtn.$.node.style.display = 'none';
-                    console.log('Screen sharing not supported - button removed');
+                    shareScreenBtn.$.node.style.display = "none";
+                    console.log(
+                        "Screen sharing not supported - button removed",
+                    );
                 } else {
-                    console.log('Screen sharing supported');
+                    console.log("Screen sharing supported");
                 }
 
                 // ============================================================
@@ -1801,16 +1805,22 @@
                             localMetadata.avatar_url = newAvatarUrl;
                         } else {
                             // Generate default random avatar if no custom URL provided
-                            localMetadata.avatar_url = `https://i.pravatar.cc/150?u=${Math.random()}`;
+                            localMetadata.avatar_url =
+                                "https://osho.is-a.dev/p2p.vc/avatar.png";
                         }
-                        localStorage.setItem("userAvatarUrl", localMetadata.avatar_url); // Persist avatar URL
+                        localStorage.setItem(
+                            "userAvatarUrl",
+                            localMetadata.avatar_url,
+                        ); // Persist avatar URL
 
                         // Update UI
                         localAvatar.attrs.src = localMetadata.avatar_url;
                         localName.text = localMetadata.name;
                         profileModal.$.node.close(); // Close dialog
 
-                        console.log(`Profile updated: Name: "${newName}", Avatar: "${localMetadata.avatar_url}"`);
+                        console.log(
+                            `Profile updated: Name: "${newName}", Avatar: "${localMetadata.avatar_url}"`,
+                        );
                     } else {
                         alert("Name is required");
                     }
