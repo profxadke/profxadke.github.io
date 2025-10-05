@@ -36,6 +36,17 @@
         />
         <title>p2p.vc</title>
         <style>
+            /* Custom light mode color scheme - professional and attractive */
+            [data-theme="light"] {
+                --b2: #f8fafc; /* Slightly off-white */
+                --b3: #e5e7eb; /* Light gray borders */
+                --bc: #1f2937; /* Dark text */
+                --inc: #6b7280; /* Muted text */
+                --su: #10b981; /* Success green */
+                --rounded-box: 1rem; /* Rounded corners for cards */
+                --rounded-btn: 0.5rem; /* Rounded buttons */
+            }
+
             .video-container {
                 position: relative;
                 padding: 0rem;
@@ -102,6 +113,10 @@
             .video-container:hover .full-scr-btn,
             .video-container:hover .block-btn {
                 display: flex;
+            }
+
+            .card-body {
+                padding: var(--padding-card, 1rem);
             }
         </style>
     </head>
@@ -215,6 +230,13 @@
                                     disabled
                                 >
                                     <i class="fas fa-user-slash"></i>
+                                </button>
+                                <button
+                                    aria-label="Toggle theme button"
+                                    class="btn btn-neutral btn-sm"
+                                    id="theme-toggle-btn"
+                                >
+                                    <i class="fas fa-moon" id="theme-icon"></i>
                                 </button>
                             </div>
                         </div>
@@ -446,6 +468,8 @@
                 const blockedPeersList = $("#blocked-peers-list"); // Container for blocked peers list
                 const noBlockedPeers = $("#no-blocked-peers"); // Message when no peers are blocked
                 const closeBlockedModalBtn = $("#close-blocked-modal-btn"); // Close blocked modal button
+                const themeToggleBtn = $("#theme-toggle-btn"); // Theme toggle button
+                const themeIcon = $("#theme-icon"); // Icon inside theme toggle button
                 const localVideoContainer = $("#local-video-container"); // Container for local video
                 const localAudioMuteIcon = $("#local-audio-mute-icon"); // Icon showing local audio is muted
                 const localVideoMuteIcon = $("#local-video-mute-icon"); // Icon showing local video is muted
@@ -1747,8 +1771,76 @@
                     blockedPeersModal.$.node.close();
                 });
 
+                // ===================
+                // THEME MANAGEMENT
+                // ===================
+
+                /**
+                 * Initializes the theme based on stored preference or system preference
+                 */
+                function initializeTheme() {
+                    // Get stored theme preference or default to light
+                    const storedTheme = localStorage.getItem("theme");
+                    const systemPrefersDark = window.matchMedia(
+                        "(prefers-color-scheme: dark)",
+                    ).matches;
+
+                    let currentTheme = storedTheme;
+
+                    // If no stored preference, use system preference, default to light
+                    if (!currentTheme) {
+                        currentTheme = systemPrefersDark ? "dark" : "light";
+                    }
+
+                    // Apply the theme
+                    setTheme(currentTheme);
+                }
+
+                /**
+                 * Sets the theme and updates UI
+                 * @param {string} theme - 'light' or 'dark'
+                 */
+                function setTheme(theme) {
+                    document.documentElement.setAttribute("data-theme", theme);
+                    localStorage.setItem("theme", theme);
+
+                    // Update button icon based on current theme
+                    // Next theme will be the opposite (sun for light mode, moon for dark mode)
+                    const iconElement = themeIcon.$.node;
+                    if (theme === "dark") {
+                        iconElement.className = "fas fa-sun";
+                    } else {
+                        iconElement.className = "fas fa-moon";
+                    }
+                }
+
+                /**
+                 * Toggles between light and dark themes
+                 */
+                function toggleTheme() {
+                    const currentTheme =
+                        document.documentElement.getAttribute("data-theme") ||
+                        "light";
+                    const newTheme = currentTheme === "dark" ? "light" : "dark";
+                    setTheme(newTheme);
+                    console.log(`Theme switched to: ${newTheme}`);
+                }
+
+                // ===================
+                // EVENT HANDLERS - Theme Toggle
+                // ===================
+
+                /**
+                 * THEME TOGGLE BUTTON
+                 * Switches between light and dark themes
+                 */
+                themeToggleBtn._.on("click", toggleTheme);
+
                 // Initialize blocked button state on load
                 updateBlockedButton();
+
+                // Initialize theme on load
+                initializeTheme();
 
                 // Check for screen sharing capability and conditionally show/hide button
                 if (!navigator.mediaDevices.getDisplayMedia) {
