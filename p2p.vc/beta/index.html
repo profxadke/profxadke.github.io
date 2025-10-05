@@ -331,7 +331,7 @@
         <dialog id="profile-modal" class="modal">
             <div class="modal-box">
                 <h3 class="font-bold text-lg">Update Profile</h3>
-                <div class="py-4">
+                <div class="py-4 space-y-4">
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">Name</span>
@@ -342,6 +342,20 @@
                             placeholder="Enter your name"
                             class="input input-bordered w-full"
                         />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Avatar URL</span>
+                        </label>
+                        <input
+                            type="url"
+                            id="avatar-input"
+                            placeholder="https://example.com/avatar.jpg"
+                            class="input input-bordered w-full"
+                        />
+                        <label class="label">
+                            <span class="label-text-alt text-base-content/60">Enter a direct image URL (optional)</span>
+                        </label>
                     </div>
                 </div>
                 <div class="modal-action">
@@ -424,6 +438,7 @@
                 const updateProfileBtn = $("#update-profile-btn"); // Open profile settings modal
                 const profileModal = $("#profile-modal"); // Profile settings modal
                 const nameInput = $("#name-input"); // Input for user's display name
+                const avatarInput = $("#avatar-input"); // Input for user's avatar URL
                 const saveProfileBtn = $("#save-profile-btn"); // Save profile changes
                 const manageBlockedBtn = $("#manage-blocked-btn"); // Button to open blocked peers modal
                 const blockedPeersModal = $("#blocked-peers-modal"); // Blocked peers modal
@@ -1753,6 +1768,7 @@
                 updateProfileBtn._.on("click", () => {
                     profileModal.$.node.showModal(); // Show modal (DaisyUI dialog method)
                     nameInput.$.node.value = localMetadata.name; // Pre-fill current name
+                    avatarInput.$.node.value = localMetadata.avatar_url; // Pre-fill current avatar URL
                 });
 
                 // Get modal control elements
@@ -1767,29 +1783,36 @@
 
                 /**
                  * SAVE PROFILE BUTTON
-                 * - Updates local metadata with new name
-                 * - Generates new random avatar
+                 * - Updates local metadata with new name and avatar URL
+                 * - Uses custom avatar URL if provided, otherwise uses default
                  * - Saves to localStorage
                  * - Updates display
                  */
                 saveProfileBtn._.on("click", () => {
                     const newName = nameInput.$.node.value.trim();
+                    const newAvatarUrl = avatarInput.$.node.value.trim();
+
                     if (newName) {
                         localMetadata.name = newName; // Update metadata
-                        localStorage.setItem("userName", newName); // Persist
+                        localStorage.setItem("userName", newName); // Persist name
 
-                        // Generate new random avatar
-                        localMetadata.avatar_url =
-                            "https://osho.is-a.dev/p2p.vc/avatar.png";
-                        localStorage.setItem(
-                            "userAvatarUrl",
-                            localMetadata.avatar_url,
-                        );
+                        // Update avatar URL - use custom if provided, otherwise default
+                        if (newAvatarUrl) {
+                            localMetadata.avatar_url = newAvatarUrl;
+                        } else {
+                            // Generate default random avatar if no custom URL provided
+                            localMetadata.avatar_url = `https://i.pravatar.cc/150?u=${Math.random()}`;
+                        }
+                        localStorage.setItem("userAvatarUrl", localMetadata.avatar_url); // Persist avatar URL
 
                         // Update UI
                         localAvatar.attrs.src = localMetadata.avatar_url;
                         localName.text = localMetadata.name;
                         profileModal.$.node.close(); // Close dialog
+
+                        console.log(`Profile updated: Name: "${newName}", Avatar: "${localMetadata.avatar_url}"`);
+                    } else {
+                        alert("Name is required");
                     }
                 });
             });
