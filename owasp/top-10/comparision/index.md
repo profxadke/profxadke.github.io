@@ -1,6 +1,6 @@
 # <center>OWASP Top 10: Yearly Mapping / Comparision</center>
 
-![OWASP Top 10: 2021-2025](https://osho.is-a.dev/owasp/top-10/comparision/2017_2021.png)
+![OWASP Top 10: 2021-2025](https://osho.is-a.dev/owasp/top-10/comparision/2021_2025.png)
 
 ![OWASP Top 10: 2017-2021](https://osho.is-a.dev/owasp/top-10/comparision/2017_2021.png)
 
