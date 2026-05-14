@@ -1,4 +1,4 @@
-# https://is.gd/nikhila
+# [https://is.gd/xadkeg](https://is.gd/xadkeg)
 > Source code to https://osho.is-a.dev/
 
 Note: If samy.pl directory is served at server's root several issues would get fixed just like that!
