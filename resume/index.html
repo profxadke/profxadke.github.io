@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nikhil Aryal (0x0sh\0) | Resume</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap");
+
+      :root {
+        --bg-primary: #0a0a0e;
+        --text-main: #d1d5db;
+        --text-muted: #9ca3af;
+        --accent-neon: #00ffcc;
+        --accent-glow: rgba(0, 255, 204, 0.2);
+        --card-bg: rgba(255, 255, 255, 0.03);
+        --card-border: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        color: var(--text-main);
+        background: linear-gradient(135deg, #07070a, #11111a, #07070a);
+        background-size: 200% 200%;
+        animation: slowBackground 25s ease infinite; /* Very slow, photo-friendly */
+        line-height: 1.6;
+      }
+
+      @keyframes slowBackground {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 50px 20px;
+      }
+
+      /* Typography */
+      h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 5px;
+        letter-spacing: -1px;
+      }
+
+      h1 .alias {
+        font-family: "Fira Code", monospace;
+        font-size: 1.5rem;
+        color: var(--accent-neon);
+        font-weight: 400;
+        text-shadow: 0 0 10px var(--accent-glow);
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #ffffff;
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: 8px;
+        margin: 40px 0 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      h3 {
+        font-size: 1.2rem;
+        color: #ffffff;
+        margin-bottom: 5px;
+      }
+
+      a {
+        color: var(--accent-neon);
+        text-decoration: none;
+        transition: text-shadow 0.3s ease;
+      }
+
+      a:hover {
+        text-shadow: 0 0 8px var(--accent-glow);
+        text-decoration: underline;
+      }
+
+      p {
+        margin-bottom: 15px;
+      }
+
+      ul {
+        margin-left: 20px;
+        margin-bottom: 15px;
+      }
+
+      li {
+        margin-bottom: 8px;
+      }
+
+      /* Header Info */
+      .contact-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        font-family: "Fira Code", monospace;
+        font-size: 0.9rem;
+        margin-bottom: 30px;
+        color: var(--text-muted);
+      }
+
+      .contact-info a {
+        display: flex;
+        align-items: center;
+      }
+
+      /* Cards and Blocks */
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-left: 4px solid var(--accent-neon);
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+      }
+
+      .meta-info {
+        font-family: "Fira Code", monospace;
+        font-size: 0.85rem;
+        color: var(--accent-neon);
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      /* Skills specific */
+      .skill-category {
+        margin-bottom: 15px;
+      }
+
+      .skill-category strong {
+        color: #ffffff;
+        margin-right: 10px;
+      }
+
+      /* Repositories */
+      .repo-title {
+        font-family: "Fira Code", monospace;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      /* Footer */
+      .footer-note {
+        text-align: center;
+        margin-top: 60px;
+        font-family: "Fira Code", monospace;
+        font-style: italic;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        opacity: 0.7;
+      }
+
+      /* Print formatting to look perfect if saved as PDF */
+      @media print {
+        body {
+          background: #111;
+          animation: none;
+        }
+        .container {
+          padding: 20px;
+        }
+        .card {
+          break-inside: avoid;
+        }
+      }
+
+      /* Add a hover effect for the button */
+      #printBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 20px rgba(0, 255, 204, 0.6);
+      }
+
+      /* Print formatting to look perfect if saved as PDF */
+      @media print {
+        /* Force the browser to render background colors */
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+
+        body {
+          background-color: #000000 !important;
+          background-image: none !important;
+          animation: none !important;
+        }
+
+        .container {
+          padding: 0;
+        }
+
+        /* Prevent page breaks inside cards */
+        .card {
+          break-inside: avoid;
+          background: rgba(255, 255, 255, 0.05) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          border-left: 4px solid #00ffcc !important;
+        }
+
+        /* Force text colors so the browser doesn't turn them black */
+        h1,
+        h2,
+        h3,
+        strong {
+          color: #ffffff !important;
+        }
+        body,
+        p,
+        li {
+          color: #d1d5db !important;
+        }
+        .meta-info,
+        h1 .alias,
+        a {
+          color: #00ffcc !important;
+          text-shadow: none !important;
+        }
+        .contact-info,
+        .footer-note,
+        .skill-category {
+          color: #9ca3af !important;
+        }
+
+        #printBtn {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <a href="https://osho.is-a.dev/"
+          ><h1>Nikhil Aryal <span class="alias">(0x0sh\0) OSHO</span></h1></a
+        >
+
+        <div class="contact-info">
+          <span
+            >📍
+            <a href="https://maps.app.goo.gl/Y3iUnd7BSWHfdiGS9" target="_blank"
+              >Banbatika Line, Tilottama 1, Province 5</a
+            ></span
+          >
+          <span
+            >📱
+            <a href="https://is.gd/call_nick" target="_blank"
+              >+977 9847697309</a
+            ></span
+          >
+          <span>📧 <a href="mailto:xadkeg@duck.com">xadkeg@duck.com</a></span>
+          <span
+            >👤 Username:
+            <a href="https://www.google.com/search?q=profxadke" target="_blank"
+              >profxadke</a
+            ></span
+          >
+          <span
+            >🐙 GitHub:
+            <a href="https://github.com/profxadke" target="_blank"
+              >github.com/profxadke</a
+            ></span
+          >
+        </div>
+      </header>
+
+      <section>
+        <h2>Professional Summary</h2>
+        <p>
+          Premier Penetration Tester, Security Tool Developer, and recognized
+          authority in Nepal's cybersecurity ecosystem. Dominates the
+          competitive hacking landscape with an unprecedented 122 TryHackMe King
+          of the Hill (KOTH) victories, an MVH title, and induction into the
+          Pentester Nepal Hall of Fame. Bridges elite offensive
+          capabilities—spanning exploit development, Ring 0 programming, and
+          kernel-level vulnerability research—with strong architectural
+          experience as a former fintech CTO. A dedicated infosec mentor and CTF
+          architect committed to accelerating community talent through
+          high-fidelity cyber range deployments and intensive training.
+        </p>
+      </section>
+
+      <section>
+        <h2>Active Research Focus Areas</h2>
+        <div class="card">
+          <ul>
+            <li>
+              <strong>Rootkit Development & Evasion:</strong> Investigating
+              advanced kernel-mode rootkits, hook detection bypasses, and
+              stealth persistence mechanisms within modern operating systems.
+            </li>
+            <li>
+              <strong>Bootkit Architecture:</strong> Analyzing firmware
+              vulnerability exploitation, Secure Boot bypass vectors, and
+              malicious pre-OS execution environments.
+            </li>
+            <li>
+              <strong>Next-Generation Offline Payment Systems:</strong>
+              Designing secure, cryptographic protocols for resilient
+              transaction clearing in network-isolated and zero-trust
+              environments.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Professional Experience</h2>
+
+        <div class="card">
+          <h3>Chief Technology Officer (CTO)</h3>
+          <span class="meta-info"
+            >ZeenoPay (zeenopay.com) | Mid 2024 – Mid 2025</span
+          >
+          <ul>
+            <li>
+              Directed the comprehensive technical architecture, cryptographic
+              frameworks, and security roadmaps for the core payment
+              infrastructure.
+            </li>
+            <li>
+              Managed cross-functional engineering teams to deliver highly
+              secure, high-throughput fintech solutions.
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Information Security Mentor & CTF Architect</h3>
+          <span class="meta-info">Independent | Ongoing</span>
+          <ul>
+            <li>
+              Deliver comprehensive online and offline mentoring programs for
+              emerging cybersecurity professionals.
+            </li>
+            <li>
+              Have already delivered offline mentoring programs on several well
+              known and highly regarded institutions.
+            </li>
+            <li>
+              Architect and host competitive Jeopardy-style and King of The Hill
+              Capture The Flag (CTF) events and advanced technical security
+              workshops.
+            </li>
+            <li>
+              Build custom, high-fidelity vulnerable labs designed for advanced
+              red team simulations and penetration testing training.
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Pentest Intern</h3>
+          <span class="meta-info"
+            >Sumeru Software Solutions, Bangalore | 2017 – 2019</span
+          >
+          <ul>
+            <li>
+              Spearheaded development for automated threat intelligence
+              profiling applications.
+            </li>
+            <li>
+              Built custom automation scripts to optimize infrastructure
+              vulnerability discovery workflows.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Also Known For</h2>
+        <div class="card">
+          <ul>
+            <li>
+              <strong>TryHackMe Domination (Username: profxadke):</strong>
+              Secured an unprecedented 122
+              <a href="https://tryhackme.com/games/koth" target="_blank"
+                >King of the Hill (KOTH)</a
+              >
+              victories in <strong>Nepal</strong>, establishing a massive lead
+              over the entire national leader-board (where the closest runner-up
+              holds 21 victories).
+            </li>
+            <li>
+              <strong>Pentester Nepal Hall of Fame:</strong> Inducted into the
+              official
+              <a
+                href="https://github.com/Pentester-Nepal/Hall-of-Fame/blob/main/Hall-of-Fame.md"
+                target="_blank"
+                >Hall of Fame</a
+              >
+              recognizing exceptional contributions and skills within the
+              national security collective.
+            </li>
+            <li>
+              <strong>Most Valuable Hacker:</strong> Awarded MVH at the NepHack
+              v2.0 - Physical hacking competition, organized by
+              <a href="https://cynicaltechnology.com/" target="_blank"
+                >Cynical Technology</a
+              >.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>A Few GitHub Repositories</h2>
+        <ul>
+          <li>
+            <a
+              href="https://github.com/profxadke/yokto.js"
+              target="_blank"
+              class="repo-title"
+              >Yokto.JS</a
+            >: A micro DOM utility/minimal DOM/HTTP/WS helper library + DOM
+            updater powered by vNode (custom no vDOM solution, more info in
+            docs)
+          </li>
+          <li>
+            <a
+              href="https://github.com/naryal2580/sech3r"
+              target="_blank"
+              class="repo-title"
+              >Sech3r</a
+            >: A specialized security automation tool engineered to parse and
+            audit HTTP security headers for hardening verification.
+          </li>
+          <li>
+            <a
+              href="https://github.com/profxadke/dore"
+              target="_blank"
+              class="repo-title"
+              >Dore</a
+            >: A dedicated exploitation framework designed to systematically
+            identify and test Direct Object Reference vulnerabilities.
+          </li>
+          <li>
+            <a
+              href="https://github.com/profxadke/shebang"
+              target="_blank"
+              class="repo-title"
+              >Shebang</a
+            >: A smart execution environment utility for optimizing shebang
+            interpreter handling.
+          </li>
+          <li>
+            <a
+              href="https://github.com/naryal2580/stoyled"
+              target="_blank"
+              class="repo-title"
+              >Stoyled</a
+            >: A python3 utility framework built to generate stylized and
+            structured terminal STDOUT formatting.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Technical Jargon / Skill Set</h2>
+        <div class="card">
+          <div class="skill-category">
+            <strong>Core Security:</strong>
+            Penetration Testing, Red Team Engagement, Bug Hunting, Hosting and
+            Playing CTF, Security Tool Development, Exploit Development,
+            Kernel-Level Vulnerability Research, etc.
+          </div>
+          <div class="skill-category">
+            <strong>Engineering & Operations:</strong>
+            Full Stack DevSecOps, Automation Infrastructure, Web Scraping
+            Systems, Fintech systems, Harness Development (custom non-dual
+            office synthesis), etc.
+          </div>
+          <div class="skill-category">
+            <strong>Languages/Tech:</strong>
+            Python(Django/FastAPI/Flask), PHP(Laravel), Elixir(Phoenix),
+            Bash/Zsh/fish/Nu, PowerShell/Batch, TypeScript/JavaScript/Node.JS,
+            Java, Kotlin, C, Rust, Go-lang, SQL(Supabase, PostgreSQL,
+            MySQL/MariaDB, SQLite), NoSQL(Firbase, MongoDB, Redis),
+            Podman/Docker, AWS/GCP, Tmux/Kitty/nVim/.., Kernel Space (Ring 0)
+            Programming, Cross-Arch Intel flavoured Assembly, etc.
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Education</h2>
+        <ul>
+          <li>
+            <strong>Bachelors in Information Technology (DROPPED-OUT)</strong> -
+            ISMT College, Yogikuti, Tilottama
+          </li>
+          <li>
+            <strong>Bachelors in Information Technology (DROPPED-OUT)</strong> -
+            Islington College, Kamalpokhari, Kathmandu
+          </li>
+          <li>
+            <strong>11th to 12th standard</strong> - Pamir International
+            Academy, Tilottama 2
+          </li>
+          <li>
+            <strong>9th standard to 10th standard</strong> - Sri Sri RaviShankar
+            Vidya Mandir, Bangalore (India, CBSE)
+          </li>
+          <li>
+            <strong>2nd standard to 9th standard</strong> - Pamir International
+            Academy, Tilottama 2
+          </li>
+          <li>
+            <strong>Nursery to 1st Standard</strong> - Paramount B.H.S School,
+            Shankarnagar 5
+          </li>
+        </ul>
+      </section>
+
+      <div class="footer-note">Uses Arch, btw.</div>
+      <button
+        onclick="window.print()"
+        id="printBtn"
+        style="
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          background: #00ffcc;
+          color: #0a0a0e;
+          border: none;
+          padding: 12px 24px;
+          font-family: &quot;Fira Code&quot;, monospace;
+          font-weight: 600;
+          font-size: 1rem;
+          border-radius: 4px;
+          cursor: pointer;
+          box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+          transition:
+            transform 0.2s,
+            box-shadow 0.2s;
+          z-index: 1000;
+        "
+      >
+        [ Save as PDF ]
+      </button>
+    </div>
+  </body>
+</html>
